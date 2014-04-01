@@ -13,7 +13,11 @@ Include the javascript file :
 
     <script src="L.activearea.js"></script>
 
-Create a DIV with a CSS class ("activeArea" in that example), place it inside your map and instanciate your map like that :
+Add a CSS class (".activeArea" in that example) with absolute position
+
+    .activeArea { position: absolute; top: 50px; left: 50px; right: 50px; height: 200px; }
+
+And instanciate your map like that :
 
     var map = new L.MapWithActiveArea(document.createElement('div'), {
         'viewportClassName': 'activeArea'
@@ -23,7 +27,7 @@ Then, the map will center itself in the center of that DIV.
 
 ## Contribute
 
-To run the test, you’ll need to install npm and bower libraries :
+To run tests, you’ll need to install npm and bower libraries :
 
 `npm install && bower install`
 
