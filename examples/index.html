@@ -7,14 +7,23 @@
     <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.css" />
     <style>
         body            { margin:0; padding:0; }
-        #map            { position:absolute; top:0; bottom:0; width:100%; }
-        .viewport       { border: 10px solid green; z-index: 4; position: absolute; display: block; top: 50px; left: 50%; right: 50px; height: 400px; }
-        .explanation    { position: absolute; top: 500px; left: 50px; right: 50px; background-color: rgba(255, 255, 255, 0.9); padding: 0 1em; overflow: auto; }
+        #map            { position:absolute; top:0; bottom:0; width:100%; z-index: 1; }
+        .viewport       { position: absolute;  top: 50px; left: 50%; right: 50px; height: 400px; }
+        .border         { border: 5px solid green; position: absolute; z-index: 2; }
+        .b1             { top: 50px; left: 50%; right: 50px; height: 0; }
+        .b2             { top: 450px; left: 50%; right: 50px; height: 0; }
+        .b3             { top: 50px; left: 50%; height: 400px; }
+        .b4             { top: 50px; right: 50px; height: 400px; }
+        .explanation    { position: absolute; top: 500px; left: 50px; right: 50px; z-index: 2; background-color: rgba(255, 255, 255, 0.9); padding: 0 1em; overflow: auto; }
     </style>
 </head>
 <body>
     <div id="map"></div>
     <div class="viewport"></div>
+    <div class="border b1"></div>
+    <div class="border b2"></div>
+    <div class="border b3"></div>
+    <div class="border b4"></div>
     <div class="explanation">
         <h1>Leaflet-active-area</h1>
         <h2>Define an area of your map as the center</h2>
