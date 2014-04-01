@@ -52,9 +52,7 @@
         var Paris = [48.85346, 2.34956];
         var London = [51.505, -0.09];
 
-        var map = new L.MapWithActiveArea('map', {
-            'viewportClassName': 'viewport'
-        }).setView(Paris, 13);
+        var map = new L.Map('map').setActiveArea('viewport').setView(Paris, 13);
 
         var markers = L.featureGroup([L.marker(Paris), L.marker(London)]);
         markers.addTo(map);

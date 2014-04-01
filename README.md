@@ -19,8 +19,16 @@ Add a CSS class (".activeArea" in that example) with absolute position
 
 And instanciate your map like that :
 
-    var map = new L.MapWithActiveArea(document.createElement('div'), {
-        'viewportClassName': 'activeArea'
+    var map = new L.Map(document.createElement('div')).setActiveArea('activeArea');
+
+You can also give an object with HTML style properties:
+
+    var map = new L.Map(document.createElement('div')).setActiveArea({
+        position: 'absolute',
+        top: '50px',
+        left: '50px',
+        right: '50px',
+        height: '200px'
     });
 
 Then, the map will center itself in the center of that DIV.

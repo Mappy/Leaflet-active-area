@@ -16,18 +16,15 @@ describe("LeafletActiveArea", function () {
 
         document.body.appendChild(mapDiv);
 
-        map = new L.MapWithActiveArea(mapDiv, {
-            'viewportClassName': 'viewport'
+        map = new L.Map(mapDiv).setActiveArea({
+            position: 'absolute',
+            top: '50px',
+            left: '50px',
+            width: '200px',
+            height: '200px',
+            backgroundColor: 'green',
+            zIndex: 2
         });
-
-        var zoneDiv = document.querySelector('.viewport');
-        zoneDiv.style.position = 'absolute';
-        zoneDiv.style.top = '50px';
-        zoneDiv.style.left = '50px';
-        zoneDiv.style.width = '200px';
-        zoneDiv.style.height = '200px';
-        zoneDiv.style.backgroundColor = 'green';
-        zoneDiv.style.zIndex = 2;
     });
 
     describe('#getCenter', function () {
