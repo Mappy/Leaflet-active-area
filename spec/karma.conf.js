@@ -6,7 +6,8 @@ module.exports = function (config) {
 		"bower_components/expect/index.js",
 		"bower_components/leaflet-dist/leaflet-src.js",
         "src/L.activearea.js",
-		"spec/suites/**/*.js"
+		"spec/suites/**/*.js",
+        {pattern: "bower_components/leaflet-dist/images/*.png", included: false}
 	];
 
 	config.set({
