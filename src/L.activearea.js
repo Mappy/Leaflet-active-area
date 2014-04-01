@@ -1,12 +1,10 @@
-L.MapWithActiveArea = L.Map.extend({
+var previousMethods = {
+    getCenter: L.Map.prototype.getCenter,
+    setView: L.Map.prototype.setView,
+    setZoomAround: L.Map.prototype.setZoomAround
+};
 
-    initialize: function (element, options, viewport) {
-        if(options && options.viewportClassName) {
-            this._viewport = L.DomUtil.create('div', options.viewportClassName, L.DomUtil.get(element));
-        }
-        return L.Map.prototype.initialize.call(this, element, options);
-    },
-
+L.Map.include({
     getViewport: function() {
         return this._viewport;
     },
@@ -38,7 +36,7 @@ L.MapWithActiveArea = L.Map.extend({
     },
 
     getCenter: function () {
-        var center = L.Map.prototype.getCenter.call(this);
+        var center = previousMethods.getCenter.call(this);
 
         if (this.getViewport()) {
             var zoom = this.getZoom(),
@@ -60,7 +58,7 @@ L.MapWithActiveArea = L.Map.extend({
             center = this.unproject(point, zoom);
         }
 
-        return L.Map.prototype.setView.call(this, center, zoom, options);
+        return previousMethods.setView.call(this, center, zoom, options);
     },
 
     setZoomAround: function (latlng, zoom, options) {
@@ -76,7 +74,20 @@ L.MapWithActiveArea = L.Map.extend({
 
             return this.setView(newCenter, zoom, {zoom: options});
         } else {
-            return L.Map.prototype.setZoomAround.call(this, point, zoom, options);
+            return previousMethods.setZoomAround.call(this, point, zoom, options);
         }
+    }
+});
+
+L.Map.include({
+    setActiveArea: function (css) {
+        this._viewport = L.DomUtil.create('div', '', this.getContainer());
+
+        if (typeof css === 'string') {
+            this._viewport.className = css;
+        } else {
+            L.extend(this._viewport.style, css);
+        }
+        return this;
     }
 });
