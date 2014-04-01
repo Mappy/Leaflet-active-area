@@ -1,0 +1,9 @@
+{
+  "name": "leaflet-active-area",
+  "version": "0.1.0",
+  "dependencies": {
+    "leaflet-dist": "http://leaflet-cdn.s3.amazonaws.com/build/leaflet-0.7.2.zip",
+    "sinon": "~1.9.0",
+    "expect": "~0.3.1"
+  }
+}

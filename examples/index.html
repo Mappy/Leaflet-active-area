@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <script src="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.js"></script>
+    <script src="../src/L.activearea.js"></script>
+    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.css" />
+    <style>
+        body            { margin:0; padding:0; }
+        #map            { position:absolute; top:0; bottom:0; width:100%; }
+        .viewport       { border: 10px solid green; z-index: 4; position: absolute; display: block; top: 50px; left: 50%; right: 50px; height: 400px; }
+        .explanation    { position: absolute; top: 500px; left: 50px; right: 50px; background-color: rgba(255, 255, 255, 0.9); padding: 0 1em; overflow: auto; }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    <div class="viewport"></div>
+    <div class="explanation">
+        <h1>Leaflet-active-area</h1>
+        <h2>Define an area of your map as the center</h2>
+        <p>
+            That plugin allows you to center the map not in the center of the map but inside a &lt;DIV&gt;.
+            A typical use case is to set a map as background (like that example) and center it on the top of the screen for example.
+        </p>
+        <p>
+            Try to center the map to <a href="#" class="london">London</a> or <a href="#" class="paris">Paris</a> or <a href="#" class="zoomin">zoom in</a> or <a href="#" class="zoomout">out</a>.
+            As you see, the center of the map is within the div with a green border and <strong>not</strong> the center of the screen.
+        </p>
+        <h2>Utilisez une zone pour centrer la carte</h2>
+        <p>
+            Ce plugin vous permet de centrer la carte non pas au milieu de la carte mais au milieu d’un &lt;DIV&gt;.
+            Un exemple typique est d’afficher une carte sur la totalité de l’écran (comme sur cet exemple) mais de la centrer en haut de l’écran par exemple.
+        </p>
+        <p>
+            Essayer de centrer la carte sur <a href="#" class="london">Londres</a> ou <a href="#" class="paris">Paris</a> ou encore <a href="#" class="zoomin">zoomer</a> ou <a href="#" class="zoomout">dézoomer</a>.
+            Comme vous pouvez le voir, la carte se centre à l’intérieur du div avec une bordure verte et <strong>non</strong> depuis le centre de l’écran.
+        </p>
+        <p>
+            <a href="https://github.com/Mappy/Leaflet-active-area">https://github.com/Mappy/Leaflet-active-area</a>
+        </p>
+    </div>
+    <script type="text/javascript">
+
+        var Paris = [48.85346, 2.34956];
+        var London = [51.505, -0.09];
+
+        var map = new L.MapWithActiveArea('map', {
+            'viewportClassName': 'viewport'
+        }).setView(Paris, 13);
+
+        L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        [].forEach.call(document.querySelectorAll('.london'), function(element) {
+            element.addEventListener('click', function(e) {
+                e.stopPropagation();
+                map.setView(London, 13);
+            }, false);
+        });
+
+        [].forEach.call(document.querySelectorAll('.paris'), function(element) {
+            element.addEventListener('click', function(e) {
+                e.stopPropagation();
+                map.setView(Paris, 13);
+            }, false);
+        });
+
+        [].forEach.call(document.querySelectorAll('.zoomin'), function(element) {
+            element.addEventListener('click', function(e) {
+                e.stopPropagation();
+                map.setZoom(map.getZoom() < map.getMaxZoom() ? map.getZoom() + 1 : map.getMaxZoom());
+            }, false);
+        });
+
+        [].forEach.call(document.querySelectorAll('.zoomout'), function(element) {
+            element.addEventListener('click', function(e) {
+                e.stopPropagation();
+                map.setZoom(map.getZoom() > map.getMinZoom() ? map.getZoom() - 1 : map.getMinZoom());
+            }, false);
+        });
+
+    </script>
+</body>
+</html>
