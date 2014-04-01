@@ -5,7 +5,7 @@ A plugin for [Leaflet](http://leafletjs.com) to change default map behavior to c
 
 ## Demo
 
-An demo is available [inside that project](http://mappy.github.io/Leaflet-active-area/examples/index.html).
+Try the [example page (examples/index.html)](http://mappy.github.io/Leaflet-active-area/examples/index.html) !
 
 ## Usage
 
@@ -21,12 +21,14 @@ Create a DIV with a CSS class ("activeArea" in that example), place it inside yo
 
 Then, the map will center itself in the center of that DIV.
 
-
 ## Contribute
 
 To run the test, you’ll need to install npm and bower libraries :
 
 npm install && bower install
+
+then :
+
 (cd spec && ../node_modules/karma/bin/karma start)
 
 ## License
