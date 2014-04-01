@@ -25,11 +25,11 @@ Then, the map will center itself in the center of that DIV.
 
 To run the test, you’ll need to install npm and bower libraries :
 
-npm install && bower install
+`npm install && bower install`
 
 then :
 
-(cd spec && ../node_modules/karma/bin/karma start)
+`(cd spec && ../node_modules/karma/bin/karma start)`
 
 ## License
 
