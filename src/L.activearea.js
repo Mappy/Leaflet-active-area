@@ -1,9 +1,12 @@
-var previousMethods = {
-    getCenter: L.Map.prototype.getCenter,
-    setView: L.Map.prototype.setView,
-    setZoomAround: L.Map.prototype.setZoomAround,
-    getBoundsZoom: L.Map.prototype.getBoundsZoom
-};
+if (typeof leafletActiveAreaPreviousMethods === 'undefined') {
+    // Defining previously that object allows you to use that plugin even if you have overridden L.map
+    leafletActiveAreaPreviousMethods = {
+        getCenter: L.Map.prototype.getCenter,
+        setView: L.Map.prototype.setView,
+        setZoomAround: L.Map.prototype.setZoomAround,
+        getBoundsZoom: L.Map.prototype.getBoundsZoom
+    };
+}
 
 L.Map.include({
     getViewport: function() {
@@ -37,7 +40,7 @@ L.Map.include({
     },
 
     getCenter: function () {
-        var center = previousMethods.getCenter.call(this);
+        var center = leafletActiveAreaPreviousMethods.getCenter.call(this);
 
         if (this.getViewport()) {
             var zoom = this.getZoom(),
@@ -59,7 +62,7 @@ L.Map.include({
             center = this.unproject(point, zoom);
         }
 
-        return previousMethods.setView.call(this, center, zoom, options);
+        return leafletActiveAreaPreviousMethods.setView.call(this, center, zoom, options);
     },
 
     setZoomAround: function (latlng, zoom, options) {
@@ -75,7 +78,7 @@ L.Map.include({
 
             return this.setView(newCenter, zoom, {zoom: options});
         } else {
-            return previousMethods.setZoomAround.call(this, point, zoom, options);
+            return leafletActiveAreaPreviousMethods.setZoomAround.call(this, point, zoom, options);
         }
     },
 
