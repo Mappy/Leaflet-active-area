@@ -9,7 +9,7 @@
         body            { margin:0; padding:0; }
         #map            { position:absolute; top:0; bottom:0; width:100%; z-index: 1; }
         .viewport       { position: absolute;  top: 50px; left: 50%; right: 50px; height: 400px; }
-        .border         { border: 5px solid green; position: absolute; z-index: 2; }
+        .border         { border: 2px solid green; position: absolute; z-index: 2; }
         .b1             { top: 50px; left: 50%; right: 50px; height: 0; }
         .b2             { top: 450px; left: 50%; right: 50px; height: 0; }
         .b3             { top: 50px; left: 50%; height: 400px; }
@@ -64,6 +64,7 @@
         [].forEach.call(document.querySelectorAll('.london'), function(element) {
             element.addEventListener('click', function(e) {
                 e.stopPropagation();
+                e.preventDefault();
                 map.setView(London, 13);
             }, false);
         });
@@ -71,6 +72,7 @@
         [].forEach.call(document.querySelectorAll('.paris'), function(element) {
             element.addEventListener('click', function(e) {
                 e.stopPropagation();
+                e.preventDefault();
                 map.setView(Paris, 13);
             }, false);
         });
@@ -78,6 +80,7 @@
         [].forEach.call(document.querySelectorAll('.zoomin'), function(element) {
             element.addEventListener('click', function(e) {
                 e.stopPropagation();
+                e.preventDefault();
                 map.setZoom(map.getZoom() < map.getMaxZoom() ? map.getZoom() + 1 : map.getMaxZoom());
             }, false);
         });
@@ -85,6 +88,7 @@
         [].forEach.call(document.querySelectorAll('.zoomout'), function(element) {
             element.addEventListener('click', function(e) {
                 e.stopPropagation();
+                e.preventDefault();
                 map.setZoom(map.getZoom() > map.getMinZoom() ? map.getZoom() - 1 : map.getMinZoom());
             }, false);
         });
@@ -92,6 +96,7 @@
         [].forEach.call(document.querySelectorAll('.fitbounds'), function(element) {
             element.addEventListener('click', function(e) {
                 e.stopPropagation();
+                e.preventDefault();
                 map.fitBounds(markers.getBounds(), {padding: [10, 10]});
             }, false);
         });
