@@ -1,7 +1,8 @@
 var previousMethods = {
     getCenter: L.Map.prototype.getCenter,
     setView: L.Map.prototype.setView,
-    setZoomAround: L.Map.prototype.setZoomAround
+    setZoomAround: L.Map.prototype.setZoomAround,
+    getBoundsZoom: L.Map.prototype.getBoundsZoom
 };
 
 L.Map.include({
@@ -76,7 +77,38 @@ L.Map.include({
         } else {
             return previousMethods.setZoomAround.call(this, point, zoom, options);
         }
+    },
+
+    getBoundsZoom: function (bounds, inside, padding) { // (LatLngBounds[, Boolean, Point]) -> Number
+        bounds = L.latLngBounds(bounds);
+
+        var zoom = this.getMinZoom() - (inside ? 1 : 0),
+            maxZoom = this.getMaxZoom(),
+            vp = this.getViewport(),
+            size = (vp) ? L.point(vp.clientWidth, vp.clientHeight) : this.getSize(),
+
+            nw = bounds.getNorthWest(),
+            se = bounds.getSouthEast(),
+
+            zoomNotFound = true,
+            boundsSize;
+
+        padding = L.point(padding || [0, 0]);
+
+        do {
+            zoom++;
+            boundsSize = this.project(se, zoom).subtract(this.project(nw, zoom)).add(padding);
+            zoomNotFound = !inside ? size.contains(boundsSize) : boundsSize.x < size.x || boundsSize.y < size.y;
+
+        } while (zoomNotFound && zoom <= maxZoom);
+
+        if (zoomNotFound && inside) {
+            return null;
+        }
+
+        return inside ? zoom : zoom - 1;
     }
+
 });
 
 L.Map.include({
