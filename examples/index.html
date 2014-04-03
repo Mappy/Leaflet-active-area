@@ -61,6 +61,7 @@
         var London = [51.505, -0.09];
 
         var map = new L.Map('map').setActiveArea('viewport').setView(Paris, 13);
+        map.scrollWheelZoom.disable();
 
         var markers = L.featureGroup([L.marker(Paris), L.marker(London)]);
         markers.addTo(map);
