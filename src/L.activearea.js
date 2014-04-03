@@ -116,7 +116,9 @@ L.Map.include({
 
 L.Map.include({
     setActiveArea: function (css) {
-        this._viewport = L.DomUtil.create('div', '', this.getContainer());
+        var container = this.getContainer();
+        this._viewport = L.DomUtil.create('div', '');
+        container.insertBefore(this._viewport, container.firstChild);
 
         if (typeof css === 'string') {
             this._viewport.className = css;
