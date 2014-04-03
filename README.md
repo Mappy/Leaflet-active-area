@@ -1,11 +1,14 @@
 Leaflet-active-area
 ===============
 
-A plugin for [Leaflet](http://leafletjs.com) to change default map behavior to center itself.
+That plugin for [Leaflet](http://leafletjs.com) allows you to use a DIV as the active area.
+Calling setView, fitBounds or setZoom will use the center of the DIV instead of the center of the map area.
+A typical use case is to set a map as background (like that [example](http://mappy.github.io/Leaflet-active-area/examples/index.html)) and center it on the top of the screen for example.
+Defining media queries on that DIV make it easy to adapt the active area according client resolution.
 
 ## Demo
 
-Try the [example page (examples/index.html)](http://mappy.github.io/Leaflet-active-area/examples/index.html) !
+Try the [example page](http://mappy.github.io/Leaflet-active-area/examples/index.html) !
 
 ## Usage
 
