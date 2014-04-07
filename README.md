@@ -46,6 +46,10 @@ then :
 
 `(cd spec && ../node_modules/karma/bin/karma start)`
 
+## Credits
+
+That plugin was originally built by [Samuel Piquet](https://github.com/sa3m), Mappy.
+
 ## License
 
 This code is provided under the Apache 2.0 license.
