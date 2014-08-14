@@ -20,6 +20,16 @@ L.Map.include({
             vpsize = L.point(vp.clientWidth, vp.clientHeight);
 
         if (vpsize.x === 0 || vpsize.y === 0) {
+            //Our own viewport has no good size - so we fallback to the container size:
+            vp = this.getContainer();
+            if(vp){
+              topleft = L.point(0, 0);  
+              vpsize = L.point(vp.clientWidth, vp.clientHeight);
+            } 
+            
+        }
+        
+        if (vpsize.x === 0 || vpsize.y === 0) {
             if (window.console) {
                 console.error('The viewport has no size. Check your CSS.');
             }
@@ -117,9 +127,12 @@ L.Map.include({
 
 L.Map.include({
     setActiveArea: function (css) {
-        var container = this.getContainer();
-        this._viewport = L.DomUtil.create('div', '');
-        container.insertBefore(this._viewport, container.firstChild);
+        if( !this._viewport ){
+            //Make viewport if not already made
+            var container = this.getContainer();
+            this._viewport = L.DomUtil.create('div', '');
+            container.insertBefore(this._viewport, container.firstChild);
+        }
 
         if (typeof css === 'string') {
             this._viewport.className = css;
