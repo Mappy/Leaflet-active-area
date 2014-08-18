@@ -10,6 +10,18 @@ if (typeof leafletActiveAreaPreviousMethods === 'undefined') {
 
 
 L.Map.include({
+    getBounds: function() {
+        if (this._viewport) {
+            return this.getViewportLatLngBounds()
+        } else {
+            var bounds = this.getPixelBounds(),
+            sw = this.unproject(bounds.getBottomLeft()),
+            ne = this.unproject(bounds.getTopRight());
+
+            return new L.LatLngBounds(sw, ne);
+        }
+    },
+
     getViewport: function() {
         return this._viewport;
     },

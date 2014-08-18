@@ -110,5 +110,23 @@ describe("LeafletActiveArea", function () {
         });
 
     });
+
+    describe('#getBounds', function () {
+        before(function() {
+            mapDiv.style.width = '1000px';
+            mapDiv.style.height = '1000px';
+            map.setView(Paris, 13);
+        });
+
+        it('should return the active area bounds', function () {
+            expect(map.getBounds().toBBoxString()).to.eql('2.2722816467285156,48.80256714651934,2.426776885986328,48.90422310913676');
+        });
+
+        it('should return the map bounds without active area', function() {
+            map._viewport = null;
+
+            expect(map.getBounds().toBBoxString()).to.eql('2.2636985778808594,48.796913540275355,2.4353599548339844,48.909864610926675');
+        });
+    });
 });
 
