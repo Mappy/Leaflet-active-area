@@ -40,12 +40,6 @@ L.Map.include({
             } 
             
         }
-        
-        if (vpsize.x === 0 || vpsize.y === 0) {
-            if (window.console) {
-                console.error('The viewport has no size. Check your CSS.');
-            }
-        }
 
         return L.bounds(topleft, topleft.add(vpsize));
     },
