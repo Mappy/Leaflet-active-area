@@ -96,7 +96,7 @@ L.Map.include({
 
             return this.setView(newCenter, zoom, {zoom: options});
         } else {
-            return previousMethods.setZoomAround.call(this, point, zoom, options);
+            return previousMethods.setZoomAround.call(this, latlng, zoom, options);
         }
     },
 
