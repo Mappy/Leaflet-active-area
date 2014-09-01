@@ -3,19 +3,9 @@
 <head>
     <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <script src="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.js"></script>
-    <script src="../src/L.activearea.js"></script>
+    <script src="../src/leaflet.activearea.js"></script>
     <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.css" />
-    <style>
-        body            { margin:0; padding:0; }
-        #map            { position:absolute; top:0; bottom:0; width:100%; z-index: 1; }
-        .viewport       { position: absolute;  top: 50px; left: 50%; right: 50px; height: 400px; }
-        .border         { border: 2px solid green; position: absolute; z-index: 2; }
-        .b1             { top: 50px; left: 50%; right: 50px; height: 0; }
-        .b2             { top: 450px; left: 50%; right: 50px; height: 0; }
-        .b3             { top: 50px; left: 50%; height: 400px; }
-        .b4             { top: 50px; right: 50px; height: 400px; }
-        .explanation    { position: absolute; top: 500px; left: 50px; right: 50px; z-index: 2; background-color: rgba(255, 255, 255, 0.9); padding: 0 1em; overflow: auto; }
-    </style>
+    <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
     <div id="map"></div>

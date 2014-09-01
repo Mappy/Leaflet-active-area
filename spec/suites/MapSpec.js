@@ -1,13 +1,13 @@
 describe("LeafletActiveArea", function () {
 
-    var map;
+    var map, mapDiv;
 
     var Paris       = L.latLng(48.85346, 2.34956);
     var London      = L.latLng(51.505, -0.09);
 
     before(function () {
 
-        var mapDiv = document.createElement('div');
+        mapDiv = document.createElement('div');
         mapDiv.style.position = 'absolute';
         mapDiv.style.top = 0;
         mapDiv.style.bottom = 0;
@@ -64,4 +64,69 @@ describe("LeafletActiveArea", function () {
             expect(position.y).to.be.eql(197);
         });
     });
+
+    describe('#setActiveArea', function () {
+
+        it('should set a new activeArea css', function () {
+
+            var before = map.getViewportBounds();
+            expect(before.max.x).to.be.eql(450);
+            expect(before.max.y).to.be.eql(250);
+
+            map.setActiveArea({
+                top: '50px',
+                left: '50px',
+                width: null,
+                height: null,
+                right: '50px',
+                bottom: '50px',
+                backgroundColor: 'green',
+                zIndex: 2
+            });
+
+            var after = map.getViewportBounds();
+            expect(after.min.x).to.be.eql(50);
+            expect(after.min.y).to.be.eql(50);
+            expect(after.max.x).to.be.eql(950);
+            expect(after.max.y).to.be.eql(950);
+        });
+
+    });
+
+    describe('#getViewportBounds', function () {
+
+        it('should fallback when using a very small container', function () {
+
+            var before = map.getViewportBounds();
+            //Set the mapDiv to be a very small size
+            mapDiv.style.width = '10px';
+            mapDiv.style.height = '10px';
+
+            var bounds = map.getViewportBounds();
+            expect(bounds.min.x).to.be.eql(0);
+            expect(bounds.min.y).to.be.eql(0);
+            expect(bounds.max.x).to.be.eql(10);
+            expect(bounds.max.y).to.be.eql(10);
+        });
+
+    });
+
+    describe('#getBounds', function () {
+        before(function() {
+            mapDiv.style.width = '1000px';
+            mapDiv.style.height = '1000px';
+            map.setView(Paris, 13);
+        });
+
+        it('should return the active area bounds', function () {
+            expect(map.getBounds().toBBoxString()).to.eql('2.2722816467285156,48.80256714651934,2.426776885986328,48.90422310913676');
+        });
+
+        it('should return the map bounds without active area', function() {
+            map._viewport = null;
+
+            expect(map.getBounds().toBBoxString()).to.eql('2.2636985778808594,48.796913540275355,2.4353599548339844,48.909864610926675');
+        });
+    });
 });
+
