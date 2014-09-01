@@ -1,6 +1,7 @@
-if (typeof leafletActiveAreaPreviousMethods === 'undefined') {
+(function(previousMethods){
+if (typeof previousMethods === 'undefined') {
     // Defining previously that object allows you to use that plugin even if you have overridden L.map
-    leafletActiveAreaPreviousMethods = {
+    previousMethods = {
         getCenter: L.Map.prototype.getCenter,
         setView: L.Map.prototype.setView,
         setZoomAround: L.Map.prototype.setZoomAround,
@@ -35,10 +36,10 @@ L.Map.include({
             //Our own viewport has no good size - so we fallback to the container size:
             vp = this.getContainer();
             if(vp){
-              topleft = L.point(0, 0);  
+              topleft = L.point(0, 0);
               vpsize = L.point(vp.clientWidth, vp.clientHeight);
-            } 
-            
+            }
+
         }
 
         return L.bounds(topleft, topleft.add(vpsize));
@@ -57,7 +58,7 @@ L.Map.include({
     },
 
     getCenter: function () {
-        var center = leafletActiveAreaPreviousMethods.getCenter.call(this);
+        var center = previousMethods.getCenter.call(this);
 
         if (this.getViewport()) {
             var zoom = this.getZoom(),
@@ -79,7 +80,7 @@ L.Map.include({
             center = this.unproject(point, zoom);
         }
 
-        return leafletActiveAreaPreviousMethods.setView.call(this, center, zoom, options);
+        return previousMethods.setView.call(this, center, zoom, options);
     },
 
     setZoomAround: function (latlng, zoom, options) {
@@ -95,7 +96,7 @@ L.Map.include({
 
             return this.setView(newCenter, zoom, {zoom: options});
         } else {
-            return leafletActiveAreaPreviousMethods.setZoomAround.call(this, point, zoom, options);
+            return previousMethods.setZoomAround.call(this, latlng, zoom, options);
         }
     },
 
@@ -148,3 +149,4 @@ L.Map.include({
         return this;
     }
 });
+})(window.leafletActiveAreaPreviousMethods);
