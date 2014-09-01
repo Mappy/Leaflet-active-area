@@ -1,4 +1,4 @@
-(function(){
+(function(previousMethods){
 if (typeof previousMethods === 'undefined') {
     // Defining previously that object allows you to use that plugin even if you have overridden L.map
     previousMethods = {
@@ -149,4 +149,4 @@ L.Map.include({
         return this;
     }
 });
-})();
+})(window.leafletActiveAreaPreviousMethods);
