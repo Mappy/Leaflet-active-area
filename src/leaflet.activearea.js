@@ -36,10 +36,10 @@ L.Map.include({
             //Our own viewport has no good size - so we fallback to the container size:
             vp = this.getContainer();
             if(vp){
-              topleft = L.point(0, 0);  
+              topleft = L.point(0, 0);
               vpsize = L.point(vp.clientWidth, vp.clientHeight);
-            } 
-            
+            }
+
         }
 
         return L.bounds(topleft, topleft.add(vpsize));
