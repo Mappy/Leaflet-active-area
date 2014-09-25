@@ -75,9 +75,9 @@ L.Map.include({
         center = L.latLng(center);
 
         if (this.getViewport()) {
-            var point = this.project(center, zoom);
+            var point = this.project(center, this._limitZoom(zoom));
             point = point.add(this.getOffset());
-            center = this.unproject(point, zoom);
+            center = this.unproject(point, this._limitZoom(zoom));
         }
 
         return previousMethods.setView.call(this, center, zoom, options);
