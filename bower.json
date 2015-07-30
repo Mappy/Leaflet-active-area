@@ -2,7 +2,7 @@
   "name": "leaflet-active-area",
   "version": "0.1.0",
   "dependencies": {
-    "leaflet": "^0.7.2"
+    "leaflet": "^0.7.3"
   },
   "devDependencies": {
     "sinon": "~1.9.0",
