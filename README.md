@@ -46,9 +46,14 @@ then :
 
 `(cd spec && ../node_modules/karma/bin/karma start)`
 
-## Credits
+## Contributors
 
-That plugin was originally built by [Samuel Piquet](https://github.com/sa3m), Mappy.
+- Samuel Piquet ([sa3m](https://github.com/sa3m), Mappy), creator of this plugin
+- Grégory Paul ([paulgreg](https://github.com/paulgreg), Mappy)
+- Michael Cellier ([mcellier](https://github.com/mcellier), Mappy)
+- Eric Brelsford ([ebrelsford](https://github.com/ebrelsford))
+- Dag Jomar Mersland ([dagjomar](https://github.com/dagjomar))
+- Miroslav Petrik ([11th](https://github.com/11th))
 
 ## License
 
