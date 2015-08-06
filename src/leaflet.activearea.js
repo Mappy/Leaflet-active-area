@@ -5,7 +5,8 @@ if (typeof previousMethods === 'undefined') {
         getCenter: L.Map.prototype.getCenter,
         setView: L.Map.prototype.setView,
         setZoomAround: L.Map.prototype.setZoomAround,
-        getBoundsZoom: L.Map.prototype.getBoundsZoom
+        getBoundsZoom: L.Map.prototype.getBoundsZoom,
+        scaleUpdate: L.Control.Scale.prototype._update
     };
 }
 
@@ -130,7 +131,33 @@ L.Map.include({
 
         return inside ? zoom : zoom - 1;
     }
+});
 
+L.Control.Scale.include({
+    _update: function () {
+        if (!this._map._viewport) {
+            previousMethods.scaleUpdate.call(this);
+        } else {
+            var bounds = this._map.getBounds(),
+                centerLat = bounds.getCenter().lat,
+                halfWorldMeters = 6378137 * Math.PI * Math.cos(centerLat * Math.PI / 180),
+                dist = halfWorldMeters * (bounds.getNorthEast().lng - bounds.getSouthWest().lng) / 180,
+
+                size = this._map.getSize(),
+                options = this.options,
+                maxMeters = 0;
+
+            var size = new L.Point(
+                this._map._viewport.clientWidth,
+                this._map._viewport.clientHeight);
+
+            if (size.x > 0) {
+                maxMeters = dist * (options.maxWidth / size.x);
+            }
+
+            this._updateScales(options, maxMeters);
+        }
+    }
 });
 
 L.Map.include({
