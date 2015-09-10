@@ -1,6 +1,6 @@
 {
   "name": "leaflet-active-area",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "devDependencies": {
     "mocha": "~1.17.1",
     "happen": "~0.1.3",

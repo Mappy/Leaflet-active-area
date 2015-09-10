@@ -6,6 +6,8 @@ All positionning methods (setView, fitBounds, setZoom) will be applyed on this D
 A typical use case is to set a map as background (like that [example](http://mappy.github.io/Leaflet-active-area/examples/index.html)) and center it on the top of the screen for example.
 Defining media queries on that DIV make it easy to adapt the active area according client resolution.
 
+Supports leaflet 1.0-beta
+
 ## Demo
 
 Try the [example page](http://mappy.github.io/Leaflet-active-area/examples/index.html) !
@@ -51,6 +53,7 @@ then :
 - Samuel Piquet ([sa3m](https://github.com/sa3m), Mappy), creator of this plugin
 - Grégory Paul ([paulgreg](https://github.com/paulgreg), Mappy)
 - Michael Cellier ([mcellier](https://github.com/mcellier), Mappy)
+- Le Menach Frederic ([flemenach](https://github.com/flemenach), Mappy)
 - Eric Brelsford ([ebrelsford](https://github.com/ebrelsford))
 - Dag Jomar Mersland ([dagjomar](https://github.com/dagjomar))
 - Miroslav Petrik ([11th](https://github.com/11th))
