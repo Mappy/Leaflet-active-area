@@ -45,13 +45,19 @@
     </div>
     <script type="text/javascript">
 
-        var Paris = [48.85346, 2.34956];
-        var London = [51.505, -0.09];
+        var Paris = [48.85346, 2.34956],
+            London = [51.505, -0.09],
+            popupOptions = {
+                autoPan: true,
+                keepInView: true
+            };
 
-        var map = new L.Map('map').setActiveArea('viewport').setView(Paris, 13);
+        var map = new L.Map('map', { inertia: false }).setActiveArea('viewport').setView(Paris, 13);
         map.scrollWheelZoom.disable();
 
-        var markers = L.featureGroup([L.marker(Paris), L.marker(London)]);
+        var markers = L.featureGroup();
+        L.marker(Paris).bindPopup(L.popup().setContent('<p>Paris (France)</p>'), popupOptions).addTo(markers);
+        L.marker(London).bindPopup(L.popup().setContent('<p>London (UK)</p>'), popupOptions).addTo(markers);
         markers.addTo(map);
 
         L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
