@@ -6,7 +6,8 @@ if (typeof previousMethods === 'undefined') {
         setView: L.Map.prototype.setView,
         setZoomAround: L.Map.prototype.setZoomAround,
         getBoundsZoom: L.Map.prototype.getBoundsZoom,
-        scaleUpdate: L.Control.Scale.prototype._update
+        scaleUpdate: L.Control.Scale.prototype._update,
+        PopupAdjustPan: L.Popup.prototype._adjustPan
     };
 }
 
@@ -142,8 +143,6 @@ L.Control.Scale.include({
                 centerLat = bounds.getCenter().lat,
                 halfWorldMeters = 6378137 * Math.PI * Math.cos(centerLat * Math.PI / 180),
                 dist = halfWorldMeters * (bounds.getNorthEast().lng - bounds.getSouthWest().lng) / 180,
-
-                size = this._map.getSize(),
                 options = this.options,
                 maxMeters = 0;
 
@@ -175,6 +174,57 @@ L.Map.include({
             L.extend(this._viewport.style, css);
         }
         return this;
+    }
+});
+
+L.Popup.include({
+    _adjustPan: function () {
+        if (!this._map._viewport) {
+            previousMethods.PopupAdjustPan.call(this);
+        } else {
+            if (!this.options.autoPan) { return; }
+
+            var map = this._map,
+                vp = map._viewport,
+                containerHeight = this._container.offsetHeight,
+                containerWidth = this._containerWidth,
+                vpTopleft = L.point(vp.offsetLeft, vp.offsetTop),
+
+                layerPos = new L.Point(
+                    this._containerLeft - vpTopleft.x,
+                    - containerHeight - this._containerBottom - vpTopleft.y);
+
+            if (this._animated) {
+                layerPos._add(L.DomUtil.getPosition(this._container));
+            }
+
+            var containerPos = map.layerPointToContainerPoint(layerPos),
+                padding = L.point(this.options.autoPanPadding),
+                paddingTL = L.point(this.options.autoPanPaddingTopLeft || padding),
+                paddingBR = L.point(this.options.autoPanPaddingBottomRight || padding),
+                size = L.point(vp.clientWidth, vp.clientHeight),
+                dx = 0,
+                dy = 0;
+
+            if (containerPos.x + containerWidth + paddingBR.x > size.x) { // right
+                dx = containerPos.x + containerWidth - size.x + paddingBR.x;
+            }
+            if (containerPos.x - dx - paddingTL.x < 0) { // left
+                dx = containerPos.x - paddingTL.x;
+            }
+            if (containerPos.y + containerHeight + paddingBR.y > size.y) { // bottom
+                dy = containerPos.y + containerHeight - size.y + paddingBR.y;
+            }
+            if (containerPos.y - dy - paddingTL.y < 0) { // top
+                dy = containerPos.y - paddingTL.y;
+            }
+
+            if (dx || dy) {
+                map
+                    .fire('autopanstart')
+                    .panBy([dx, dy]);
+            }
+        }
     }
 });
 })(window.leafletActiveAreaPreviousMethods);
