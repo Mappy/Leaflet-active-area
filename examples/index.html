@@ -2,9 +2,9 @@
 <html>
 <head>
     <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/leaflet-src.js"></script>
     <script src="../src/leaflet.activearea.js"></script>
-    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/leaflet.css" />
     <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
@@ -45,13 +45,19 @@
     </div>
     <script type="text/javascript">
 
-        var Paris = [48.85346, 2.34956];
-        var London = [51.505, -0.09];
+        var Paris = [48.85346, 2.34956],
+            London = [51.505, -0.09],
+            popupOptions = {
+                autoPan: true,
+                keepInView: true
+            };
 
-        var map = new L.Map('map').setActiveArea('viewport').setView(Paris, 13);
+        var map = new L.Map('map', { inertia: false }).setActiveArea('viewport').setView(Paris, 13);
         map.scrollWheelZoom.disable();
 
-        var markers = L.featureGroup([L.marker(Paris), L.marker(London)]);
+        var markers = L.featureGroup();
+        L.marker(Paris).bindPopup(L.popup().setContent('<p>Paris (France)</p>'), popupOptions).addTo(markers);
+        L.marker(London).bindPopup(L.popup().setContent('<p>London (UK)</p>'), popupOptions).addTo(markers);
         markers.addTo(map);
 
         L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {

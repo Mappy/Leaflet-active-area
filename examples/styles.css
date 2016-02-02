@@ -12,6 +12,11 @@ body {
   z-index: 1;
 }
 
+.leaflet-popup-content {
+  font-weight: bold;
+  font-size: 18px;
+}
+
 .viewport {
   position: absolute;
   top: 50px;
