@@ -10,6 +10,11 @@ Defining media queries on that DIV make it easy to adapt the active area accordi
 
 Try the [example page](http://mappy.github.io/Leaflet-active-area/examples/index.html) !
 
+## Versions
+
+The "master" branch supports the last stable version of leaflet (0.7.7)
+If you need to use this plugin with leaflet 1.0 beta, you can use the specific branch of leaflet-active-area [leaflet-1.0](https://github.com/Mappy/Leaflet-active-area/tree/leaflet-1.0)
+
 ## Usage
 
 Include the javascript file :
