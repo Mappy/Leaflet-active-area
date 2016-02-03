@@ -8,6 +8,8 @@ Defining media queries on that DIV make it easy to adapt the active area accordi
 
 Supports leaflet 1.0-beta
 
+If you need to use this plugin with the last stable release of leaflet (0.7.7), you can use the [master](https://github.com/Mappy/Leaflet-active-area/tree/leaflet-1.0) branch of the project.
+
 ## Demo
 
 Try the [example page](http://mappy.github.io/Leaflet-active-area/examples/index.html) !
