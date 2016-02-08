@@ -152,13 +152,15 @@ L.Map.include({
 });
 
 L.Renderer.include({
-    _updateTransform: function () {
-        var zoom = this._map.getZoom(),
-            center = this._map.getCenter(true),
-            scale = this._map.getZoomScale(zoom, this._zoom),
-            offset = this._map._latLngToNewLayerPoint(this._topLeft, zoom, center);
-
-        L.DomUtil.setTransform(this._container, offset, scale);
+    _updateTransform: function (center, zoom) {
+        var scale = this._map.getZoomScale(zoom, this._zoom),
+            position = L.DomUtil.getPosition(this._container),
+            viewHalf = this._map.getSize().multiplyBy(0.5 + this.options.padding),
+            currentCenterPoint = this._map.project(this._center, zoom),
+            destCenterPoint = this._map.project(center, zoom),
+            centerOffset = destCenterPoint.subtract(currentCenterPoint),
+            topLeftOffset = viewHalf.multiplyBy(-scale).add(position).add(viewHalf).subtract(centerOffset);
+        L.DomUtil.setTransform(this._container, topLeftOffset, scale);
     }
 });
 
