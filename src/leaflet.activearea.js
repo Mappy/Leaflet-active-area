@@ -5,7 +5,9 @@ if (typeof previousMethods === 'undefined') {
         getCenter: L.Map.prototype.getCenter,
         setView: L.Map.prototype.setView,
         setZoomAround: L.Map.prototype.setZoomAround,
-        getBoundsZoom: L.Map.prototype.getBoundsZoom
+        getBoundsZoom: L.Map.prototype.getBoundsZoom,
+        PopupAdjustPan: L.Popup.prototype._adjustPan,
+        RendererUpdate: L.Renderer.prototype._update
     };
 }
 
@@ -103,34 +105,28 @@ L.Map.include({
 
     getBoundsZoom: function (bounds, inside, padding) { // (LatLngBounds[, Boolean, Point]) -> Number
         bounds = L.latLngBounds(bounds);
-
-        var zoom = this.getMinZoom() - (inside ? 1 : 0),
-            maxZoom = this.getMaxZoom(),
-            vp = this.getViewport(),
-            size = (vp) ? L.point(vp.clientWidth, vp.clientHeight) : this.getSize(),
-
-            nw = bounds.getNorthWest(),
-            se = bounds.getSouthEast(),
-
-            zoomNotFound = true,
-            boundsSize;
-
         padding = L.point(padding || [0, 0]);
 
-        do {
-            zoom++;
-            boundsSize = this.project(se, zoom).subtract(this.project(nw, zoom)).add(padding);
-            zoomNotFound = !inside ? size.contains(boundsSize) : boundsSize.x < size.x || boundsSize.y < size.y;
+        var zoom = this.getZoom() || 0,
+            min = this.getMinZoom(),
+            max = this.getMaxZoom(),
+            nw = bounds.getNorthWest(),
+            se = bounds.getSouthEast(),
+            vp = this.getViewport(),
+            size = (vp) ? L.point(vp.clientWidth, vp.clientHeight) : this.getSize(),
+            boundsSize = this.project(se, zoom).subtract(this.project(nw, zoom)).add(padding),
+            snap = L.Browser.any3d ? this.options.zoomSnap : 1;
 
-        } while (zoomNotFound && zoom <= maxZoom);
+        var scale = Math.min(size.x / boundsSize.x, size.y / boundsSize.y);
+        zoom = this.getScaleZoom(scale, zoom);
 
-        if (zoomNotFound && inside) {
-            return null;
+        if (snap) {
+            zoom = Math.round(zoom / (snap / 100)) * (snap / 100); // don't jump if within 1% of a snap level
+            zoom = inside ? Math.ceil(zoom / snap) * snap : Math.floor(zoom / snap) * snap;
         }
 
-        return inside ? zoom : zoom - 1;
+        return Math.max(min, Math.min(max, zoom));
     }
-
 });
 
 L.Map.include({
@@ -152,13 +148,13 @@ L.Map.include({
 });
 
 L.Renderer.include({
-    _updateTransform: function () {
-        var zoom = this._map.getZoom(),
-            center = this._map.getCenter(true),
-            scale = this._map.getZoomScale(zoom, this._zoom),
-            offset = this._map._latLngToNewLayerPoint(this._topLeft, zoom, center);
+    _onZoom: function () {
+        this._updateTransform(this._map.getCenter(true), this._map.getZoom());
+    },
 
-        L.DomUtil.setTransform(this._container, offset, scale);
+    _update: function () {
+        previousMethods.RendererUpdate.call(this);
+        this._center = this._map.getCenter(true);
     }
 });
 
@@ -166,19 +162,22 @@ L.GridLayer.include({
     _updateLevels: function () {
 
         var zoom = this._tileZoom,
-            maxZoom = this.options.maxZoom;
+        maxZoom = this.options.maxZoom;
+
+        if (zoom === undefined) { return undefined; }
 
         for (var z in this._levels) {
             if (this._levels[z].el.children.length || z === zoom) {
                 this._levels[z].el.style.zIndex = maxZoom - Math.abs(zoom - z);
             } else {
                 L.DomUtil.remove(this._levels[z].el);
+                this._removeTilesAtZoom(z);
                 delete this._levels[z];
             }
         }
 
         var level = this._levels[zoom],
-            map = this._map;
+        map = this._map;
 
         if (!level) {
             level = this._levels[zoom] = {};
@@ -201,25 +200,20 @@ L.GridLayer.include({
     },
 
     _resetView: function (e) {
-        var pinch = e && e.pinch;
-        this._setView(this._map.getCenter(true), this._map.getZoom(), pinch, pinch);
+        var animating = e && (e.pinch || e.flyTo);
+        this._setView(this._map.getCenter(true), this._map.getZoom(), animating, animating);
     },
 
-    _update: function (center, zoom) {
-
+    _update: function (center) {
         var map = this._map;
         if (!map) { return; }
+        var zoom = map.getZoom();
 
-        if (center === undefined) { center = map.getCenter(true); }
-        if (zoom === undefined) { zoom = map.getZoom(); }
-        var tileZoom = Math.round(zoom);
+        if (center === undefined) { center = map.getCenter(this); }
+        if (this._tileZoom === undefined) { return; }    // if out of minzoom/maxzoom
 
-        if (tileZoom > this.options.maxZoom ||
-            tileZoom < this.options.minZoom) { return; }
-
-        var pixelBounds = this._getTiledPixelBounds(center, zoom, tileZoom);
-
-        var tileRange = this._pxBoundsToTileRange(pixelBounds),
+        var pixelBounds = this._getTiledPixelBounds(center),
+            tileRange = this._pxBoundsToTileRange(pixelBounds),
             tileCenter = tileRange.getCenter(),
             queue = [];
 
@@ -227,11 +221,15 @@ L.GridLayer.include({
             this._tiles[key].current = false;
         }
 
+        // _update just loads more tiles. If the tile zoom level differs too much
+        // from the map's, let _setView reset levels and prune old tiles.
+        if (Math.abs(zoom - this._tileZoom) > 1) { this._setView(center, zoom); return; }
+
         // create a queue of coordinates to load tiles from
         for (var j = tileRange.min.y; j <= tileRange.max.y; j++) {
             for (var i = tileRange.min.x; i <= tileRange.max.x; i++) {
                 var coords = new L.Point(i, j);
-                coords.z = tileZoom;
+                coords.z = this._tileZoom;
 
                 if (!this._isValidTile(coords)) { continue; }
 
@@ -253,6 +251,8 @@ L.GridLayer.include({
             // if its the first batch of tiles to load
             if (!this._loading) {
                 this._loading = true;
+                // @event loading: Event
+                // Fired when the grid layer starts loading tiles
                 this.fire('loading');
             }
 
@@ -273,7 +273,7 @@ L.Popup.include({
         if (!this._map._viewport) {
             previousMethods.PopupAdjustPan.call(this);
         } else {
-            if (!this.options.autoPan) { return; }
+            if (!this.options.autoPan || (this._map._panAnim && this._map._panAnim._inProgress)) { return; }
 
             var map = this._map,
                 vp = map._viewport,
@@ -310,6 +310,10 @@ L.Popup.include({
                 dy = containerPos.y - paddingTL.y;
             }
 
+            // @namespace Map
+            // @section Popup events
+            // @event autopanstart
+            // Fired when the map starts autopanning when opening a popup.
             if (dx || dy) {
                 map
                     .fire('autopanstart')
