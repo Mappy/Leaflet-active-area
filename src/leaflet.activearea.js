@@ -52,9 +52,31 @@ L.Map.include({
         return L.latLngBounds(this.containerPointToLatLng(bounds.min), this.containerPointToLatLng(bounds.max));
     },
 
+    _hasTorqueLayer: function() {
+        if(!L.TorqueLayer) return false;
+
+        var keys = Object.keys(this._layers);
+
+        for(var i = 0, j = keys.length; i < j; i++) {
+            if(this._layers[keys[i]] instanceof L.TorqueLayer) {
+                return true;
+            }
+        }
+
+        return false;
+    },
+
     getOffset: function() {
         var mCenter = this.getSize().divideBy(2),
             vCenter = this.getViewportBounds().getCenter();
+
+        /* If one of the map layer is a Torque, we wan't to return the center
+         * of the map and not the one of the viewport because it messes up the
+         * position of the dots on the map (offset them by the difference
+         * between mCenter and vCenter) */
+        if(this._hasTorqueLayer()) {
+            return L.point([0, 0]);
+        }
 
         return mCenter.subtract(vCenter);
     },
