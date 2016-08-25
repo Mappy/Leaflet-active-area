@@ -13,7 +13,13 @@ Try the [example page](http://mappy.github.io/Leaflet-active-area/examples/index
 ## Versions
 
 The "master" branch supports the last stable version of leaflet (0.7.7)
-If you need to use this plugin with leaflet 1.0 beta, you can use the specific branch of leaflet-active-area [leaflet-1.0](https://github.com/Mappy/Leaflet-active-area/tree/leaflet-1.0)
+
+## Installation
+
+(For leaflet 0.7.7)
+npm install --save-dev leaflet-active-area@0.1.1
+
+The latest version (1.0.1) of leaflet-active-area was meant to support leaflet-1.x but has not been updated since leaflet 1.0-beta1. We will work on it as soon as a stable version of leaflet is released.
 
 ## Usage
 
