@@ -1,6 +1,14 @@
 {
   "name": "leaflet-active-area",
   "version": "0.1.0",
+  "main": "src/leaflet.activearea.js",
+  "ignore": [
+    ".*",
+    "*.md",
+    "examples",
+    "spec",
+    "package.json"
+  ],
   "dependencies": {
     "leaflet": "0.7.7"
   },
