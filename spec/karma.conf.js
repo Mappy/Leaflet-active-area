@@ -4,10 +4,10 @@ module.exports = function (config) {
     var files = [
         "bower_components/sinon/lib/sinon.js",
         "bower_components/expect/index.js",
-        "bower_components/leaflet-dist/leaflet-src.js",
+        "bower_components/leaflet/dist/leaflet-src.js",
         "src/leaflet.activearea.js",
         "spec/suites/**/*.js",
-        {pattern: "bower_components/leaflet-dist/images/*.png", included: false}
+        {pattern: "bower_components/leaflet/dist/images/*.png", included: false}
     ];
 
     config.set({
