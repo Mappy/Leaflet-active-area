@@ -4,10 +4,10 @@ module.exports = function (config) {
 	var files = [
 		"bower_components/sinon/lib/sinon.js",
 		"bower_components/expect/index.js",
-		"bower_components/leaflet-dist/leaflet-src.js",
-    "src/leaflet.activearea.js",
+		"bower_components/leaflet/dist/leaflet-src.js",
+        "src/leaflet.activearea.js",
 		"spec/suites/**/*.js",
-        {pattern: "bower_components/leaflet-dist/images/*.png", included: false}
+        {pattern: "bower_components/leaflet/dist/images/*.png", included: false}
 	];
 
 	config.set({
@@ -53,6 +53,7 @@ module.exports = function (config) {
 		// - Safari (only Mac)
 		// - PhantomJS
 		// - IE (only Windows)
+		//browsers: ['PhantomJS'],
 		browsers: ['PhantomJS'],
 
 		// If browser does not capture in given timeout [ms], kill it
