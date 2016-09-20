@@ -43,7 +43,7 @@ describe("LeafletActiveArea", function () {
         });
     });
 
-    describe('#fitBounds', function () {
+    describe.only('#fitBounds', function () {
 
         it('should set markers inside the DIV', function () {
 
@@ -52,8 +52,7 @@ describe("LeafletActiveArea", function () {
             markers.addTo(map);
 
             // When
-            map.setView(Paris, 13);
-            map.fitBounds(markers.getBounds(), {padding: [10, 10]});
+            map.fitBounds(markers.getBounds(), {padding: [0, 0]});
 
             // Then
             var position = map.latLngToLayerPoint(London);
