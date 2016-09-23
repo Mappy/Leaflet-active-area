@@ -43,7 +43,7 @@ describe("LeafletActiveArea", function () {
         });
     });
 
-    describe.only('#fitBounds', function () {
+    describe('#fitBounds', function () {
 
         it('should set markers inside the DIV', function () {
 
