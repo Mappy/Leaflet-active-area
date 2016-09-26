@@ -17,11 +17,7 @@ L.Map.include({
         if (this._viewport) {
             return this.getViewportLatLngBounds()
         } else {
-            var bounds = this.getPixelBounds(),
-            sw = this.unproject(bounds.getBottomLeft()),
-            ne = this.unproject(bounds.getTopRight());
-
-            return new L.LatLngBounds(sw, ne);
+            return previousMethods.getBounds.call(this);
         }
     },
 
