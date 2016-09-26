@@ -123,6 +123,37 @@ L.Map.include({
         }
 
         return Math.max(min, Math.min(max, zoom));
+    },
+
+    _limitCenter: function (center, zoom, bounds) {
+
+        if (!bounds) { return center; }
+
+        var centerPoint = this.project(center, zoom),
+            vpBounds = this.getViewportBounds(),
+            viewHalf = vpBounds.max.subtract(vpBounds.min).divideBy(2),
+            viewBounds = new L.Bounds(centerPoint.subtract(viewHalf), centerPoint.add(viewHalf)),
+            offset = this._getBoundsOffset(viewBounds, bounds, zoom);
+
+        // If offset is less than a pixel, ignore.
+        // This prevents unstable projections from getting into
+        // an infinite loop of tiny offsets.
+        if (offset.round().equals([0, 0])) {
+            return center;
+        }
+
+        return this.unproject(centerPoint.add(offset), zoom);
+    },
+
+    // adjust offset for view to get inside bounds
+    _limitOffset: function (offset, bounds) {
+        if (!bounds) { return offset; }
+
+        var viewBounds = this.getPixelBounds(),
+            vpBounds = this.getViewportBounds(),
+            newBounds = new L.Bounds(viewBounds.min.add(offset).add(vpBounds.min), viewBounds.min.add(offset).add(vpBounds.max));
+
+        return offset.add(this._getBoundsOffset(newBounds, bounds));
     }
 });
 
