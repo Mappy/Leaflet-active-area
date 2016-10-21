@@ -6,8 +6,8 @@ if (typeof previousMethods === 'undefined') {
         setView: L.Map.prototype.setView,
         setZoomAround: L.Map.prototype.setZoomAround,
         getBoundsZoom: L.Map.prototype.getBoundsZoom,
-        scaleUpdate: L.Control.Scale.prototype._update,
-        PopupAdjustPan: L.Popup.prototype._adjustPan
+        PopupAdjustPan: L.Popup.prototype._adjustPan,
+        RendererUpdate: L.Renderer.prototype._update
     };
 }
 
@@ -58,10 +58,10 @@ L.Map.include({
         return mCenter.subtract(vCenter);
     },
 
-    getCenter: function () {
+    getCenter: function (withoutViewport) {
         var center = previousMethods.getCenter.call(this);
 
-        if (this.getViewport()) {
+        if (this.getViewport() && !withoutViewport) {
             var zoom = this.getZoom(),
                 point = this.project(center, zoom);
             point = point.subtract(this.getOffset());
@@ -104,57 +104,28 @@ L.Map.include({
 
     getBoundsZoom: function (bounds, inside, padding) { // (LatLngBounds[, Boolean, Point]) -> Number
         bounds = L.latLngBounds(bounds);
-
-        var zoom = this.getMinZoom() - (inside ? 1 : 0),
-            maxZoom = this.getMaxZoom(),
-            vp = this.getViewport(),
-            size = (vp) ? L.point(vp.clientWidth, vp.clientHeight) : this.getSize(),
-
-            nw = bounds.getNorthWest(),
-            se = bounds.getSouthEast(),
-
-            zoomNotFound = true,
-            boundsSize;
-
         padding = L.point(padding || [0, 0]);
 
-        do {
-            zoom++;
-            boundsSize = this.project(se, zoom).subtract(this.project(nw, zoom)).add(padding);
-            zoomNotFound = !inside ? size.contains(boundsSize) : boundsSize.x < size.x || boundsSize.y < size.y;
+        var zoom = this.getZoom() || 0,
+            min = this.getMinZoom(),
+            max = this.getMaxZoom(),
+            nw = bounds.getNorthWest(),
+            se = bounds.getSouthEast(),
+            vp = this.getViewport(),
+            size = (vp ? L.point(vp.clientWidth, vp.clientHeight) : this.getSize()).subtract(padding),
+            boundsSize = this.project(se, zoom).subtract(this.project(nw, zoom)),
+            snap = L.Browser.any3d ? this.options.zoomSnap : 1;
 
-        } while (zoomNotFound && zoom <= maxZoom);
+        var scale = Math.min(size.x / boundsSize.x, size.y / boundsSize.y);
 
-        if (zoomNotFound && inside) {
-            return null;
+        zoom = this.getScaleZoom(scale, zoom);
+
+        if (snap) {
+            zoom = Math.round(zoom / (snap / 100)) * (snap / 100); // don't jump if within 1% of a snap level
+            zoom = inside ? Math.ceil(zoom / snap) * snap : Math.floor(zoom / snap) * snap;
         }
 
-        return inside ? zoom : zoom - 1;
-    }
-});
-
-L.Control.Scale.include({
-    _update: function () {
-        if (!this._map._viewport) {
-            previousMethods.scaleUpdate.call(this);
-        } else {
-            var bounds = this._map.getBounds(),
-                centerLat = bounds.getCenter().lat,
-                halfWorldMeters = 6378137 * Math.PI * Math.cos(centerLat * Math.PI / 180),
-                dist = halfWorldMeters * (bounds.getNorthEast().lng - bounds.getSouthWest().lng) / 180,
-                options = this.options,
-                maxMeters = 0;
-
-            var size = new L.Point(
-                this._map._viewport.clientWidth,
-                this._map._viewport.clientHeight);
-
-            if (size.x > 0) {
-                maxMeters = dist * (options.maxWidth / size.x);
-            }
-
-            this._updateScales(options, maxMeters);
-        }
+        return Math.max(min, Math.min(max, zoom));
     }
 });
 
@@ -176,12 +147,133 @@ L.Map.include({
     }
 });
 
+L.Renderer.include({
+    _onZoom: function () {
+        this._updateTransform(this._map.getCenter(true), this._map.getZoom());
+    },
+
+    _update: function () {
+        previousMethods.RendererUpdate.call(this);
+        this._center = this._map.getCenter(true);
+    }
+});
+
+L.GridLayer.include({
+    _updateLevels: function () {
+
+        var zoom = this._tileZoom,
+        maxZoom = this.options.maxZoom;
+
+        if (zoom === undefined) { return undefined; }
+
+        for (var z in this._levels) {
+            if (this._levels[z].el.children.length || z === zoom) {
+                this._levels[z].el.style.zIndex = maxZoom - Math.abs(zoom - z);
+            } else {
+                L.DomUtil.remove(this._levels[z].el);
+                this._removeTilesAtZoom(z);
+                delete this._levels[z];
+            }
+        }
+
+        var level = this._levels[zoom],
+        map = this._map;
+
+        if (!level) {
+            level = this._levels[zoom] = {};
+
+            level.el = L.DomUtil.create('div', 'leaflet-tile-container leaflet-zoom-animated', this._container);
+            level.el.style.zIndex = maxZoom;
+
+            level.origin = map.project(map.unproject(map.getPixelOrigin()), zoom).round();
+            level.zoom = zoom;
+
+            this._setZoomTransform(level, map.getCenter(true), map.getZoom());
+
+            // force the browser to consider the newly added element for transition
+            L.Util.falseFn(level.el.offsetWidth);
+        }
+
+        this._level = level;
+
+        return level;
+    },
+
+    _resetView: function (e) {
+        var animating = e && (e.pinch || e.flyTo);
+        this._setView(this._map.getCenter(true), this._map.getZoom(), animating, animating);
+    },
+
+    _update: function (center) {
+        var map = this._map;
+        if (!map) { return; }
+        var zoom = map.getZoom();
+
+        if (center === undefined) { center = map.getCenter(this); }
+        if (this._tileZoom === undefined) { return; }    // if out of minzoom/maxzoom
+
+        var pixelBounds = this._getTiledPixelBounds(center),
+            tileRange = this._pxBoundsToTileRange(pixelBounds),
+            tileCenter = tileRange.getCenter(),
+            queue = [];
+
+        for (var key in this._tiles) {
+            this._tiles[key].current = false;
+        }
+
+        // _update just loads more tiles. If the tile zoom level differs too much
+        // from the map's, let _setView reset levels and prune old tiles.
+        if (Math.abs(zoom - this._tileZoom) > 1) { this._setView(center, zoom); return; }
+
+        // create a queue of coordinates to load tiles from
+        for (var j = tileRange.min.y; j <= tileRange.max.y; j++) {
+            for (var i = tileRange.min.x; i <= tileRange.max.x; i++) {
+                var coords = new L.Point(i, j);
+                coords.z = this._tileZoom;
+
+                if (!this._isValidTile(coords)) { continue; }
+
+                var tile = this._tiles[this._tileCoordsToKey(coords)];
+                if (tile) {
+                    tile.current = true;
+                } else {
+                    queue.push(coords);
+                }
+            }
+        }
+
+        // sort tile queue to load tiles in order of their distance to center
+        queue.sort(function (a, b) {
+            return a.distanceTo(tileCenter) - b.distanceTo(tileCenter);
+        });
+
+        if (queue.length !== 0) {
+            // if its the first batch of tiles to load
+            if (!this._loading) {
+                this._loading = true;
+                // @event loading: Event
+                // Fired when the grid layer starts loading tiles
+                this.fire('loading');
+            }
+
+            // create DOM fragment to append tiles in one batch
+            var fragment = document.createDocumentFragment();
+
+            for (i = 0; i < queue.length; i++) {
+                this._addTile(queue[i], fragment);
+            }
+
+            this._level.el.appendChild(fragment);
+        }
+    }
+});
+
 L.Popup.include({
     _adjustPan: function () {
         if (!this._map._viewport) {
             previousMethods.PopupAdjustPan.call(this);
         } else {
-            if (!this.options.autoPan) { return; }
+            if (!this.options.autoPan || (this._map._panAnim && this._map._panAnim._inProgress)) { return; }
 
             var map = this._map,
                 vp = map._viewport,
@@ -193,7 +285,7 @@ L.Popup.include({
                     this._containerLeft - vpTopleft.x,
                     - containerHeight - this._containerBottom - vpTopleft.y);
 
-            if (this._animated) {
+            if (this._zoomAnimated) {
                 layerPos._add(L.DomUtil.getPosition(this._container));
             }
 
@@ -218,6 +310,10 @@ L.Popup.include({
                 dy = containerPos.y - paddingTL.y;
             }
 
+            // @namespace Map
+            // @section Popup events
+            // @event autopanstart
+            // Fired when the map starts autopanning when opening a popup.
             if (dx || dy) {
                 map
                     .fire('autopanstart')

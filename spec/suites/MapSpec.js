@@ -24,7 +24,7 @@ describe("LeafletActiveArea", function () {
             left: '50px',
             width: '400px',
             height: '200px',
-            backgroundColor: 'green',
+            outline: '2px solid green',
             zIndex: 2
         });
     });
@@ -52,16 +52,16 @@ describe("LeafletActiveArea", function () {
             markers.addTo(map);
 
             // When
-            map.fitBounds(markers.getBounds(), {padding: [10, 10]});
+            map.fitBounds(markers.getBounds(), {padding: [0, 0]});
 
             // Then
             var position = map.latLngToLayerPoint(London);
-            expect(position.x).to.be.eql(222);
-            expect(position.y).to.be.eql(103);
+            expect(position.x).to.be.equal(195);
+            expect(position.y).to.be.equal(55);
 
             position = map.latLngToLayerPoint(Paris);
-            expect(position.x).to.be.eql(277);
-            expect(position.y).to.be.eql(197);
+            expect(position.x).to.be.equal(306);
+            expect(position.y).to.be.equal(244);
         });
     });
 
@@ -80,7 +80,7 @@ describe("LeafletActiveArea", function () {
                 height: null,
                 right: '50px',
                 bottom: '50px',
-                backgroundColor: 'green',
+                outline: '2px solid yellow',
                 zIndex: 2
             });
 
@@ -119,13 +119,13 @@ describe("LeafletActiveArea", function () {
         });
 
         it('should return the active area bounds', function () {
-            expect(map.getBounds().toBBoxString()).to.eql('2.2722816467285156,48.80256714651934,2.426776885986328,48.90422310913676');
+            expect(map.getBounds().toBBoxString()).to.eql('2.272281646728516,48.80256714651934,2.426776885986328,48.90422310913678');
         });
 
         it('should return the map bounds without active area', function() {
             map._viewport = null;
 
-            expect(map.getBounds().toBBoxString()).to.eql('2.2636985778808594,48.796913540275355,2.4353599548339844,48.909864610926675');
+            expect(map.getBounds().toBBoxString()).to.eql('2.26369857788086,48.796913540275355,2.435359954833985,48.909864610926675');
         });
     });
 });
