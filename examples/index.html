@@ -52,7 +52,7 @@
                 keepInView: true
             };
 
-        var map = new L.Map('map', { inertia: false }).setActiveArea('viewport').setView(Paris, 13);
+        var map = new L.Map('map', { inertia: false }).setView(Paris, 13).setActiveArea('viewport', true);
         map.scrollWheelZoom.disable();
 
         var markers = L.featureGroup();

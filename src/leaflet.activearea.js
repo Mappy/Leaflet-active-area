@@ -131,7 +131,14 @@ L.Map.include({
 });
 
 L.Map.include({
-    setActiveArea: function (css) {
+    setActiveArea: function (css, keepCenter, animate) {
+        var center;
+        if (keepCenter && this._zoom) {
+            // save center if map is already initialized
+            // and keepCenter is passed
+            center = this.getCenter();
+        }
+
         if( !this._viewport ){
             //Make viewport if not already made
             var container = this.getContainer();
@@ -143,6 +150,10 @@ L.Map.include({
             this._viewport.className = css;
         } else {
             L.extend(this._viewport.style, css);
+        }
+
+        if (center) {
+            this.setView(center, this.getZoom(), { animate: !!animate });
         }
         return this;
     }

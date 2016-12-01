@@ -49,6 +49,13 @@ You can also give an object with HTML style properties:
 
 Then, the map will center itself in the center of that DIV when calling setView, setZoom, fitBounds, etc.
 
+If your need to re-center the map automatically, pass 'true' as second argument :
+
+    map.setActiveArea('activeArea', true, true);
+
+Pass true as 3rd argument to animate the pan (default = false)
+
+
 ## Contribute
 
 To run tests, you’ll need to install npm and bower libraries :
