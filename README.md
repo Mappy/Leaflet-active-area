@@ -12,8 +12,8 @@ Try the [example page](http://mappy.github.io/Leaflet-active-area/examples/index
 
 ## Versions
 
-The "master" branch supports leaflet 1.0
-The "leaflet-0.7" branch supports leaflet 0.7
+* The "master" branch supports leaflet 1.0
+* The "leaflet-0.7" branch supports leaflet 0.7
 
 ## Installation
 
