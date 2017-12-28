@@ -1,6 +1,6 @@
 {
   "name": "leaflet-active-area",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "dependencies": {
     "leaflet": "1.0.1"
   },

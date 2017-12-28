@@ -6,19 +6,18 @@ All positionning methods (setView, fitBounds, setZoom) will be applyed on this D
 A typical use case is to set a map as background (like that [example](http://mappy.github.io/Leaflet-active-area/examples/index.html)) and center it on the top of the screen for example.
 Defining media queries on that DIV make it easy to adapt the active area according client resolution.
 
-Supports leaflet 1.0.1
-
 ## Demo
 
 Try the [example page](http://mappy.github.io/Leaflet-active-area/examples/index.html) !
 
 ## Versions
 
-The "master" branch supports the last stable version of leaflet (0.7.7)
+The "master" branch supports leaflet 1.0
+The "leaflet-0.7" branch supports leaflet 0.7
 
 ## Installation
 
-The latest version (1.0.1) of leaflet-active-area supports leaflet-1.0
+The latest version (1.0.*) of leaflet-active-area supports leaflet-1.0
 
 For leaflet 0.7.7, use `npm install --save-dev leaflet-active-area@0.1.1`
 
