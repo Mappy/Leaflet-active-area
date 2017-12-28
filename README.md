@@ -66,14 +66,8 @@ then :
 
 ## Contributors
 
-- Samuel Piquet ([sa3m](https://github.com/sa3m), Mappy), creator of this plugin
-- Grégory Paul ([paulgreg](https://github.com/paulgreg), Mappy)
-- Michael Cellier ([mcellier](https://github.com/mcellier), Mappy)
-- Frederic Le Menach ([flemenach](https://github.com/flemenach), Mappy)
-- Vivien Ripoche ([vripoche](https://github.com/vripoche), Mappy)
-- Eric Brelsford ([ebrelsford](https://github.com/ebrelsford))
-- Dag Jomar Mersland ([dagjomar](https://github.com/dagjomar))
-- Miroslav Petrik ([11th](https://github.com/11th))
+Thanks to all contributors : https://github.com/Mappy/Leaflet-active-area/graphs/contributors
+
 
 ## License
 
