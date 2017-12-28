@@ -18,10 +18,9 @@ The "master" branch supports the last stable version of leaflet (0.7.7)
 
 ## Installation
 
-(For leaflet 0.7.7)
-npm install --save-dev leaflet-active-area@0.1.1
+The latest version (1.0.0) of leaflet-active-area supports leaflet-1.0
 
-The latest version (1.0.1) of leaflet-active-area was meant to support leaflet-1.x but has not been updated since leaflet 1.0-beta1. We will work on it as soon as a stable version of leaflet is released.
+For leaflet 0.7.7, use `npm install --save-dev leaflet-active-area@0.1.1`
 
 ## Usage
 
