@@ -85,6 +85,21 @@ L.Map.include({
 
         return previousMethods.setView.call(this, center, zoom, options);
     },
+    
+    /* CUSTOM FLY TO - Kendaros */
+    flyTo: function (targetCenter, zoom, options) {
+      targetCenter = L.latLng(targetCenter);
+      zoom = zoom === undefined ? this._zoom : this._limitZoom(zoom);
+
+      if (this.getViewport()) {
+        var point = this.project(targetCenter, this._limitZoom(zoom));
+        point = point.add(this.getOffset());
+        targetCenter = this.unproject(point, this._limitZoom(zoom));
+      }
+
+      return previousMethods.flyTo.call(this, targetCenter, zoom, options, previousMethods.getCenter.call(this));
+    },
+    /* CUSTOM FLY TO END */
 
     setZoomAround: function (latlng, zoom, options) {
         var vp = this.getViewport();
