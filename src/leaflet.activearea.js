@@ -4,6 +4,7 @@ if (typeof previousMethods === 'undefined') {
     previousMethods = {
         getCenter: L.Map.prototype.getCenter,
         setView: L.Map.prototype.setView,
+        flyTo: L.Map.prototype.flyTo,
         setZoomAround: L.Map.prototype.setZoomAround,
         getBoundsZoom: L.Map.prototype.getBoundsZoom,
         PopupAdjustPan: L.Popup.prototype._adjustPan,
