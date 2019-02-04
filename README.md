@@ -53,17 +53,6 @@ If your need to re-center the map automatically, pass 'true' as second argument 
 
 Pass true as 3rd argument to animate the pan (default = false)
 
-
-## Contribute
-
-To run tests, you’ll need to install npm and bower libraries :
-
-`npm install && bower install`
-
-then :
-
-`npm test`
-
 ## Pre-commit hook
 
 To install the pre-commit hook (which launch tests): `ln -s ../../pre-commit.sh .git/hooks/pre-commit`
@@ -71,7 +60,6 @@ To install the pre-commit hook (which launch tests): `ln -s ../../pre-commit.sh 
 ## Contributors
 
 Thanks to all contributors : https://github.com/Mappy/Leaflet-active-area/graphs/contributors
-
 
 ## License
 
