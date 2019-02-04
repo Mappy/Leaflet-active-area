@@ -24,7 +24,7 @@
             A typical use case is to set a map as background (like that example) and center it on the top of the screen for example.
         </p>
         <p>
-            Try to center the map to <a href="#" class="london">London</a> or <a href="#" class="paris">Paris</a>, <a href="#" class="zoomin">zoom in</a> or <a href="#" class="zoomout">out</a> or <a href="#" class="fitbounds">fitbounds</a>.
+            Try to center the map to <a href="#" class="london">London</a>, <a href="#" class="paris">Paris</a>, <a href="#" class="zoomin">zoom in</a>, <a href="#" class="zoomout">out</a>, <a href="#" class="fitbounds">fitbounds</a> or <a href="#" class="flyto">flyto</a>.
             As you see, the center of the map is within the div with a green border and <strong>not</strong> the center of the screen.
         </p>
         <h2>Zone active ?</h2>
@@ -36,7 +36,7 @@
             Un exemple typique est d’afficher une carte sur la totalité de l’écran (comme sur cet exemple) mais de la centrer en haut de l’écran par exemple.
         </p>
         <p>
-            Essayer de centrer la carte sur <a href="#" class="london">Londres</a> ou <a href="#" class="paris">Paris</a>, <a href="#" class="zoomin">zoomer</a> ou <a href="#" class="zoomout">dézoomer</a> ou encore <a href="#" class="fitbounds">fitbounds</a>.
+            Essayer de centrer la carte sur <a href="#" class="london">Londres</a>, <a href="#" class="paris">Paris</a>, <a href="#" class="zoomin">zoomer</a>, <a href="#" class="zoomout">dézoomer</a>, <a href="#" class="fitbounds">fitbounds</a> ou <a href="#" class="flyto">flyto</a>..
             Comme vous pouvez le voir, la carte se centre à l’intérieur du div avec une bordure verte et <strong>non</strong> depuis le centre de l’écran.
         </p>
         <p>
@@ -45,8 +45,9 @@
     </div>
     <script type="text/javascript">
 
-        var Paris = [48.85346, 2.34956],
+        var Paris = [48.853, 2.349],
             London = [51.505, -0.09],
+            NYC = [40.622, -73.916],
             popupOptions = {
                 autoPan: true,
                 keepInView: true
@@ -58,52 +59,29 @@
         var markers = L.featureGroup();
         L.marker(Paris).bindPopup(L.popup().setContent('<p>Paris (France)</p>'), popupOptions).addTo(markers);
         L.marker(London).bindPopup(L.popup().setContent('<p>London (UK)</p>'), popupOptions).addTo(markers);
+        L.marker(NYC).bindPopup(L.popup().setContent('<p>NYC (USA)</p>'), popupOptions).addTo(markers);
         markers.addTo(map);
 
         L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
 
-        [].forEach.call(document.querySelectorAll('.london'), function(element) {
-            element.addEventListener('click', function(e) {
-                e.stopPropagation();
-                e.preventDefault();
-                map.setView(London, 13);
-            }, false);
-        });
+        function register(event, fn) {
+            [].forEach.call(document.querySelectorAll(event), function(element) {
+                element.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    fn();
+                }, false);
+            });
+        }
 
-        [].forEach.call(document.querySelectorAll('.paris'), function(element) {
-            element.addEventListener('click', function(e) {
-                e.stopPropagation();
-                e.preventDefault();
-                map.setView(Paris, 13);
-            }, false);
-        });
-
-        [].forEach.call(document.querySelectorAll('.zoomin'), function(element) {
-            element.addEventListener('click', function(e) {
-                e.stopPropagation();
-                e.preventDefault();
-                map.setZoom(map.getZoom() < map.getMaxZoom() ? map.getZoom() + 1 : map.getMaxZoom());
-            }, false);
-        });
-
-        [].forEach.call(document.querySelectorAll('.zoomout'), function(element) {
-            element.addEventListener('click', function(e) {
-                e.stopPropagation();
-                e.preventDefault();
-                map.setZoom(map.getZoom() > map.getMinZoom() ? map.getZoom() - 1 : map.getMinZoom());
-            }, false);
-        });
-
-        [].forEach.call(document.querySelectorAll('.fitbounds'), function(element) {
-            element.addEventListener('click', function(e) {
-                e.stopPropagation();
-                e.preventDefault();
-                map.fitBounds(markers.getBounds(), {padding: [10, 10]});
-            }, false);
-        });
-
+        register('.london', () => map.setView(London, 13));
+        register('.paris', () => map.setView(Paris, 13));
+        register('.zoomin', () => map.setZoom(map.getZoom() < map.getMaxZoom() ? map.getZoom() + 1 : map.getMaxZoom()));
+        register('.zoomout', () => map.setZoom(map.getZoom() > map.getMinZoom() ? map.getZoom() - 1 : map.getMinZoom()));
+        register('.fitbounds', () => map.fitBounds(markers.getBounds(), {padding: [10, 10]}));
+        register('.flyto', () => map.flyTo(NYC, 13));
     </script>
 </body>
 </html>
