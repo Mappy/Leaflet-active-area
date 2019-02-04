@@ -64,6 +64,10 @@ then :
 
 `npm test`
 
+## Pre-commit hook
+
+To install the pre-commit hook (which launch tests): `ln -s ../../pre-commit.sh .git/hooks/pre-commit`
+
 ## Contributors
 
 Thanks to all contributors : https://github.com/Mappy/Leaflet-active-area/graphs/contributors
