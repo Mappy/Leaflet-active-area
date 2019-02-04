@@ -64,46 +64,21 @@
             attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
 
-        [].forEach.call(document.querySelectorAll('.london'), function(element) {
-            element.addEventListener('click', function(e) {
-                e.stopPropagation();
-                e.preventDefault();
-                map.setView(London, 13);
-            }, false);
-        });
+        function register(event, fn) {
+            [].forEach.call(document.querySelectorAll(event), function(element) {
+                element.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    fn();
+                }, false);
+            });
+        }
 
-        [].forEach.call(document.querySelectorAll('.paris'), function(element) {
-            element.addEventListener('click', function(e) {
-                e.stopPropagation();
-                e.preventDefault();
-                map.setView(Paris, 13);
-            }, false);
-        });
-
-        [].forEach.call(document.querySelectorAll('.zoomin'), function(element) {
-            element.addEventListener('click', function(e) {
-                e.stopPropagation();
-                e.preventDefault();
-                map.setZoom(map.getZoom() < map.getMaxZoom() ? map.getZoom() + 1 : map.getMaxZoom());
-            }, false);
-        });
-
-        [].forEach.call(document.querySelectorAll('.zoomout'), function(element) {
-            element.addEventListener('click', function(e) {
-                e.stopPropagation();
-                e.preventDefault();
-                map.setZoom(map.getZoom() > map.getMinZoom() ? map.getZoom() - 1 : map.getMinZoom());
-            }, false);
-        });
-
-        [].forEach.call(document.querySelectorAll('.fitbounds'), function(element) {
-            element.addEventListener('click', function(e) {
-                e.stopPropagation();
-                e.preventDefault();
-                map.fitBounds(markers.getBounds(), {padding: [10, 10]});
-            }, false);
-        });
-
+        register('.london', () => map.setView(London, 13));
+        register('.paris', () => map.setView(Paris, 13));
+        register('.zoomin', () => map.setZoom(map.getZoom() < map.getMaxZoom() ? map.getZoom() + 1 : map.getMaxZoom()));
+        register('.zoomout', () => map.setZoom(map.getZoom() > map.getMinZoom() ? map.getZoom() - 1 : map.getMinZoom()));
+        register('.fitbounds', () => map.fitBounds(markers.getBounds(), {padding: [10, 10]}));
     </script>
 </body>
 </html>
