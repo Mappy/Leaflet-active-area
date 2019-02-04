@@ -86,7 +86,7 @@ L.Map.include({
 
         return previousMethods.setView.call(this, center, zoom, options);
     },
-    
+
     flyTo: function (targetCenter, zoom, options) {
       targetCenter = L.latLng(targetCenter);
       zoom = zoom === undefined ? this._zoom : this._limitZoom(zoom);
