@@ -4,7 +4,7 @@
   "main": "src/leaflet.activearea.js",
   "devDependencies": {
     "expect": "^24.0.0",
-    "karma": "^4.0.0",
+    "karma": "^4.1.0",
     "karma-chrome-launcher": "^0.1.2",
     "karma-coverage": "^1.1.2",
     "karma-expect": "^1.1.3",
