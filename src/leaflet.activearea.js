@@ -12,8 +12,9 @@ if (typeof previousMethods === 'undefined') {
     };
 }
 
-
 L.Map.include({
+
+    // Overrides L.Map.getBounds
     getBounds: function() {
         if (this._viewport) {
             return this.getViewportLatLngBounds()
@@ -26,10 +27,12 @@ L.Map.include({
         }
     },
 
+    // Extends L.Map
     getViewport: function() {
         return this._viewport;
     },
 
+    // Extends L.Map
     getViewportBounds: function() {
         var vp = this._viewport,
             topleft = L.point(vp.offsetLeft, vp.offsetTop),
@@ -48,11 +51,13 @@ L.Map.include({
         return L.bounds(topleft, topleft.add(vpsize));
     },
 
+    // Extends L.Map
     getViewportLatLngBounds: function() {
         var bounds = this.getViewportBounds();
         return L.latLngBounds(this.containerPointToLatLng(bounds.min), this.containerPointToLatLng(bounds.max));
     },
 
+    // Extends L.Map
     getOffset: function() {
         var mCenter = this.getSize().divideBy(2),
             vCenter = this.getViewportBounds().getCenter();
@@ -60,6 +65,7 @@ L.Map.include({
         return mCenter.subtract(vCenter);
     },
 
+    // Overrides L.Map.getCenter
     getCenter: function (withoutViewport) {
         var center = previousMethods.getCenter.call(this);
 
@@ -74,6 +80,7 @@ L.Map.include({
         return center;
     },
 
+    // Overrides L.Map.setView
     setView: function (center, zoom, options) {
         center = L.latLng(center);
         zoom = zoom === undefined ? this._zoom : this._limitZoom(zoom);
@@ -87,7 +94,8 @@ L.Map.include({
         return previousMethods.setView.call(this, center, zoom, options);
     },
 
-	flyTo: function (targetCenter, targetZoom, options) {
+    // Overrides L.Map.flyTo
+    flyTo: function (targetCenter, targetZoom, options) {
         targetCenter = L.latLng(targetCenter);
         targetZoom = targetZoom === undefined ? startZoom : targetZoom;
 
@@ -124,9 +132,9 @@ L.Map.include({
                 b = t1 / b1,
                 sq = Math.sqrt(b * b + 1) - b;
 
-            // workaround for floating point precision bug when sq = 0, log = -Infinite,
-            // thus triggering an infinite loop in flyTo
-            var log = sq < 0.000000001 ? -18 : Math.log(sq);
+                // workaround for floating point precision bug when sq = 0, log = -Infinite,
+                // thus triggering an infinite loop in flyTo
+                var log = sq < 0.000000001 ? -18 : Math.log(sq);
 
             return log;
         }
@@ -171,7 +179,7 @@ L.Map.include({
         return this;
     },
 
-
+    // Overrides L.Map.setZoomAround
     setZoomAround: function (latlng, zoom, options) {
         var vp = this.getViewport();
 
@@ -189,6 +197,7 @@ L.Map.include({
         }
     },
 
+    // Overrides L.Map.getBoundsZoom
     getBoundsZoom: function (bounds, inside, padding) { // (LatLngBounds[, Boolean, Point]) -> Number
         bounds = L.latLngBounds(bounds);
         padding = L.point(padding || [0, 0]);
@@ -201,9 +210,10 @@ L.Map.include({
             vp = this.getViewport(),
             size = (vp ? L.point(vp.clientWidth, vp.clientHeight) : this.getSize()).subtract(padding),
             boundsSize = this.project(se, zoom).subtract(this.project(nw, zoom)),
-            snap = L.Browser.any3d ? this.options.zoomSnap : 1;
-
-        var scale = Math.min(size.x / boundsSize.x, size.y / boundsSize.y);
+            snap = L.Browser.any3d ? this.options.zoomSnap : 1,
+            scalex = size.x / boundsSize.x,
+            scaley = size.y / boundsSize.y,
+            scale = inside ? Math.max(scalex, scaley) : Math.min(scalex, scaley);
 
         zoom = this.getScaleZoom(scale, zoom);
 
@@ -213,10 +223,9 @@ L.Map.include({
         }
 
         return Math.max(min, Math.min(max, zoom));
-    }
-});
+    },
 
-L.Map.include({
+    // Extends L.Map
     setActiveArea: function (css, keepCenter, animate) {
         var center;
         if (keepCenter && this._zoom) {
@@ -246,10 +255,13 @@ L.Map.include({
 });
 
 L.Renderer.include({
+
+    // Overrides L.Renderer._onZoom
     _onZoom: function () {
         this._updateTransform(this._map.getCenter(true), this._map.getZoom());
     },
 
+    // Overrides L.Renderer._update
     _update: function () {
         previousMethods.RendererUpdate.call(this);
         this._center = this._map.getCenter(true);
@@ -257,25 +269,30 @@ L.Renderer.include({
 });
 
 L.GridLayer.include({
+
+    // Overrides L.GridLayer._updateLevels
     _updateLevels: function () {
 
         var zoom = this._tileZoom,
-        maxZoom = this.options.maxZoom;
+            maxZoom = this.options.maxZoom;
 
         if (zoom === undefined) { return undefined; }
 
         for (var z in this._levels) {
+            z = Number(z);
             if (this._levels[z].el.children.length || z === zoom) {
                 this._levels[z].el.style.zIndex = maxZoom - Math.abs(zoom - z);
+                this._onUpdateLevel(z);
             } else {
                 L.DomUtil.remove(this._levels[z].el);
                 this._removeTilesAtZoom(z);
+                this._onRemoveLevel(z);
                 delete this._levels[z];
             }
         }
 
         var level = this._levels[zoom],
-        map = this._map;
+            map = this._map;
 
         if (!level) {
             level = this._levels[zoom] = {};
@@ -286,10 +303,12 @@ L.GridLayer.include({
             level.origin = map.project(map.unproject(map.getPixelOrigin()), zoom).round();
             level.zoom = zoom;
 
-            this._setZoomTransform(level, map.getCenter(true), map.getZoom());
+            this._setZoomTransform(level, map.getCenter(), map.getZoom());
 
             // force the browser to consider the newly added element for transition
             L.Util.falseFn(level.el.offsetWidth);
+
+            this._onCreateLevel(level);
         }
 
         this._level = level;
@@ -297,26 +316,40 @@ L.GridLayer.include({
         return level;
     },
 
+    // Overrides L.GridLayer._resetView
     _resetView: function (e) {
         var animating = e && (e.pinch || e.flyTo);
         this._setView(this._map.getCenter(true), this._map.getZoom(), animating, animating);
     },
 
+    // Overrides L.GridLayer._update
     _update: function (center) {
         var map = this._map;
         if (!map) { return; }
         var zoom = this._clampZoom(map.getZoom());
 
-        if (center === undefined) { center = map.getCenter(this); }
-        if (this._tileZoom === undefined) { return; }    // if out of minzoom/maxzoom
+        if (center === undefined) { center = map.getCenter(true); }
+        if (this._tileZoom === undefined) { return; }   // if out of minzoom/maxzoom
 
         var pixelBounds = this._getTiledPixelBounds(center),
             tileRange = this._pxBoundsToTileRange(pixelBounds),
             tileCenter = tileRange.getCenter(),
-            queue = [];
+            queue = [],
+            margin = this.options.keepBuffer,
+            noPruneRange = new L.Bounds(tileRange.getBottomLeft().subtract([margin, -margin]),
+                                        tileRange.getTopRight().add([margin, -margin]));
+
+        // Sanity check: panic if the tile range contains Infinity somewhere.
+        if (!(isFinite(tileRange.min.x) &&
+              isFinite(tileRange.min.y) &&
+              isFinite(tileRange.max.x) &&
+              isFinite(tileRange.max.y))) { throw new Error('Attempted to load an infinite number of tiles'); }
 
         for (var key in this._tiles) {
-            this._tiles[key].current = false;
+            var c = this._tiles[key].coords;
+            if (c.z !== this._tileZoom || !noPruneRange.contains(new L.Point(c.x, c.y))) {
+                this._tiles[key].current = false;
+            }
         }
 
         // _update just loads more tiles. If the tile zoom level differs too much
@@ -346,11 +379,11 @@ L.GridLayer.include({
         });
 
         if (queue.length !== 0) {
-            // if its the first batch of tiles to load
+            // if it's the first batch of tiles to load
             if (!this._loading) {
                 this._loading = true;
                 // @event loading: Event
-                // Fired when the grid layer starts loading tiles
+                // Fired when the grid layer starts loading tiles.
                 this.fire('loading');
             }
 
@@ -367,25 +400,25 @@ L.GridLayer.include({
 });
 
 L.Popup.include({
+
+    // Overrides L.Popup._adjustPan
     _adjustPan: function () {
         if (!this._map._viewport) {
             previousMethods.PopupAdjustPan.call(this);
         } else {
-            if (!this.options.autoPan || (this._map._panAnim && this._map._panAnim._inProgress)) { return; }
+            if (!this.options.autoPan) { return; }
+            if (this._map._panAnim) { this._map._panAnim.stop(); }
 
             var map = this._map,
                 vp = map._viewport,
                 containerHeight = this._container.offsetHeight,
                 containerWidth = this._containerWidth,
                 vpTopleft = L.point(vp.offsetLeft, vp.offsetTop),
-
                 layerPos = new L.Point(
                     this._containerLeft - vpTopleft.x,
                     - containerHeight - this._containerBottom - vpTopleft.y);
 
-            if (this._zoomAnimated) {
-                layerPos._add(L.DomUtil.getPosition(this._container));
-            }
+            layerPos._add(L.DomUtil.getPosition(this._container));
 
             var containerPos = map.layerPointToContainerPoint(layerPos),
                 padding = L.point(this.options.autoPanPadding),
@@ -410,7 +443,7 @@ L.Popup.include({
 
             // @namespace Map
             // @section Popup events
-            // @event autopanstart
+            // @event autopanstart: Event
             // Fired when the map starts autopanning when opening a popup.
             if (dx || dy) {
                 map
@@ -420,4 +453,5 @@ L.Popup.include({
         }
     }
 });
+
 })(window.leafletActiveAreaPreviousMethods);
