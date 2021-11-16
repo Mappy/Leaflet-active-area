@@ -328,7 +328,7 @@ L.GridLayer.include({
         if (!map) { return; }
         var zoom = this._clampZoom(map.getZoom());
 
-        if (center === undefined) { center = map.getCenter(); }
+        if (center === undefined) { center = map.getCenter(true); }
         if (this._tileZoom === undefined) { return; }   // if out of minzoom/maxzoom
 
         var pixelBounds = this._getTiledPixelBounds(center),
