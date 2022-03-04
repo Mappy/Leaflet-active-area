@@ -14,11 +14,8 @@ module.exports = function (config) {
 
         plugins: [
             'karma-mocha',
-            'karma-coverage',
-            'karma-phantomjs-launcher',
             'karma-chrome-launcher',
-            'karma-expect',
-            'karma-sinon',
+            'karma-expect'
         ],
 
         // frameworks to use
@@ -54,7 +51,7 @@ module.exports = function (config) {
         // - PhantomJS
         // - IE (only Windows)
         //browsers: ['PhantomJS'],
-        browsers: ['PhantomJS'],
+        browsers: ['ChromeHeadless'],
 
         // If browser does not capture in given timeout [ms], kill it
         captureTimeout: 5000,
