@@ -2,9 +2,16 @@
   "name": "leaflet-active-area",
   "version": "1.4.0",
   "main": "src/leaflet.activearea.js",
+  "type": "module",
+  "exports": {
+    ".": "./src/leaflet.activearea.js"
+  },
+  "peerDependencies": {
+    "leaflet": "^2.0.0-beta.5"
+  },
   "devDependencies": {
     "@vitest/browser-playwright": "^5.1.1",
-    "leaflet": "^1.9.4",
+    "leaflet": "^2.0.0-beta.5",
     "playwright": "^1.65.1",
     "vite": "^8.3.8",
     "vitest": "^5.1.1"
