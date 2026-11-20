@@ -2,10 +2,15 @@
 <html>
 <head>
     <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <link rel="stylesheet" href="../node_modules/leaflet/dist/leaflet.css" />
     <link rel="stylesheet" href="styles.css" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-    <script src="../src/leaflet.activearea.js"></script>
+    <script type="importmap">
+    {
+        "imports": {
+            "leaflet": "../node_modules/leaflet/dist/leaflet.js"
+        }
+    }
+    </script>
 </head>
 <body>
     <div id="map"></div>
@@ -43,9 +48,11 @@
             <a href="https://github.com/Mappy/Leaflet-active-area">https://github.com/Mappy/Leaflet-active-area</a>
         </p>
     </div>
-    <script type="text/javascript">
+    <script type="module">
+        import { LeafletMap, TileLayer, Marker, Popup, FeatureGroup } from 'leaflet';
+        import '../src/leaflet.activearea.js';
 
-        var Paris = [48.853, 2.349],
+        const Paris = [48.853, 2.349],
             London = [51.505, -0.09],
             NYC = [40.622, -73.916],
             popupOptions = {
@@ -53,22 +60,22 @@
                 keepInView: true
             };
 
-        var map = new L.Map('map', { inertia: false }).setView(Paris, 13).setActiveArea('viewport', true);
+        const map = new LeafletMap('map', { inertia: false }).setView(Paris, 13).setActiveArea('viewport', true);
         map.scrollWheelZoom.disable();
 
-        var markers = L.featureGroup();
-        L.marker(Paris).bindPopup(L.popup().setContent('<p>Paris (France)</p>'), popupOptions).addTo(markers);
-        L.marker(London).bindPopup(L.popup().setContent('<p>London (UK)</p>'), popupOptions).addTo(markers);
-        L.marker(NYC).bindPopup(L.popup().setContent('<p>NYC (USA)</p>'), popupOptions).addTo(markers);
+        const markers = new FeatureGroup();
+        new Marker(Paris).bindPopup(new Popup().setContent('<p>Paris (France)</p>'), popupOptions).addTo(markers);
+        new Marker(London).bindPopup(new Popup().setContent('<p>London (UK)</p>'), popupOptions).addTo(markers);
+        new Marker(NYC).bindPopup(new Popup().setContent('<p>NYC (USA)</p>'), popupOptions).addTo(markers);
         markers.addTo(map);
 
-        L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+        new TileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
 
         function register(event, fn) {
-            [].forEach.call(document.querySelectorAll(event), function(element) {
-                element.addEventListener('click', function(e) {
+            document.querySelectorAll(event).forEach(element => {
+                element.addEventListener('click', (e) => {
                     e.stopPropagation();
                     e.preventDefault();
                     fn();
@@ -80,7 +87,7 @@
         register('.paris', () => map.setView(Paris, 13));
         register('.zoomin', () => map.setZoom(map.getZoom() < map.getMaxZoom() ? map.getZoom() + 1 : map.getMaxZoom()));
         register('.zoomout', () => map.setZoom(map.getZoom() > map.getMinZoom() ? map.getZoom() - 1 : map.getMinZoom()));
-        register('.fitbounds', () => map.fitBounds(markers.getBounds(), {padding: [10, 10]}));
+        register('.fitbounds', () => map.fitBounds(markers.getBounds(), { padding: [10, 10] }));
         register('.flyto', () => map.flyTo(NYC, 13));
     </script>
 </body>

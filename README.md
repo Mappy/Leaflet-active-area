@@ -1,45 +1,88 @@
 # Leaflet-active-area
 
-That [Leaflet](http://leafletjs.com) plugin allows you to use a DIV as the active area.
-All positionning methods (setView, fitBounds, setZoom) will be applyed on this DIV instead of the all map.
-A typical use case is to set a map as background (like that [example](http://mappy.github.io/Leaflet-active-area/examples/index.html)) and center it on the top of the screen for example.
-Defining media queries on that DIV make it easy to adapt the active area according client resolution.
+This [Leaflet](https://leafletjs.com) plugin allows you to use a `<div>` as an active area.
+All positioning methods (`setView`, `fitBounds`, `flyTo`, `setZoomAround`) are applied relative to this active area instead of the whole map container.
+A typical use case is having a map as background (like in the [example](examples/index.html)) and centering it on a specific portion of the screen (e.g. top banner, sidebar offset).
+Defining CSS media queries on that `<div>` makes it easy to adapt the active area according to client resolution.
 
-## Demo
-
-Try the [example page](http://mappy.github.io/Leaflet-active-area/examples/index.html) !
+> **Note on Leaflet versions:**
+> - This version targets **Leaflet 2 (in beta, `2.0.0-beta.5`)**.
+> - If you are using **Leaflet 1.x**, please use version **`1.4.0`** of `leaflet-active-area`.
 
 ## Usage
 
-Include the javascript file :
+### With modern bundlers (ESM)
 
-    <script src="L.activearea.js"></script>
+Install Leaflet (v2 beta) and this package:
 
-Add a CSS class (".activeArea" in that example) with absolute position
+```bash
+npm install leaflet@2.0.0-beta.5 leaflet-active-area
+```
 
-    .activeArea { position: absolute; top: 50px; left: 50px; right: 50px; height: 200px; }
+Import Leaflet and the plugin:
 
-And instanciate your map like that :
+```javascript
+import { LeafletMap } from 'leaflet';
+import 'leaflet/dist/leaflet.css';
+import 'leaflet-active-area';
 
-    var map = new L.Map(document.createElement('div')).setActiveArea('activeArea');
+const map = new LeafletMap(document.getElementById('map')).setActiveArea('activeArea');
+```
 
-You can also give an object with HTML style properties:
+### Static HTML with ES Modules & import maps
 
-    var map = new L.Map(document.createElement('div')).setActiveArea({
-        position: 'absolute',
-        top: '50px',
-        left: '50px',
-        right: '50px',
-        height: '200px'
-    });
+```html
+<link rel="stylesheet" href="node_modules/leaflet/dist/leaflet.css" />
 
-Then, the map will center itself in the center of that DIV when calling setView, setZoom, fitBounds, etc.
+<script type="importmap">
+{
+  "imports": {
+    "leaflet": "./node_modules/leaflet/dist/leaflet.js"
+  }
+}
+</script>
 
-If your need to re-center the map automatically, pass 'true' as second argument :
+<script type="module">
+  import { LeafletMap } from 'leaflet';
+  import './node_modules/leaflet-active-area/src/leaflet.activearea.js';
 
-    map.setActiveArea('activeArea', true, true);
+  const map = new LeafletMap('map').setActiveArea('activeArea');
+</script>
+```
 
-Pass true as 3rd argument to animate the pan (default = false)
+Add CSS for `.activeArea` with absolute positioning:
+
+```css
+.activeArea {
+  position: absolute;
+  top: 50px;
+  left: 50px;
+  right: 50px;
+  height: 200px;
+}
+```
+
+You can also pass an object with style properties directly:
+
+```javascript
+const map = new LeafletMap('map').setActiveArea({
+  position: 'absolute',
+  top: '50px',
+  left: '50px',
+  right: '50px',
+  height: '200px'
+});
+```
+
+Then, the map will center itself in the center of that `<div>` when calling `setView`, `setZoom`, `fitBounds`, etc.
+
+If you need to re-center the map automatically upon setting the active area, pass `true` as the second argument:
+
+```javascript
+map.setActiveArea('activeArea', true, true);
+```
+
+Pass `true` as the 3rd argument to animate the pan (default = `false`).
 
 ### Bounds
 
@@ -48,7 +91,7 @@ Pass true as 3rd argument to animate the pan (default = false)
 
 ## React Leaflet integration
 
-If you use [React Leaflet](https://react-leaflet.js.org/), you can enable the active area from a child component of `MapContainer` using the `useMap` hook:
+If you use [React Leaflet](https://react-leaflet.js.org/) (for Leaflet 1.x with `leaflet-active-area@1.4.0`):
 
 ```jsx
 import React, { useEffect } from "react";
@@ -80,25 +123,13 @@ export default function MyMap() {
 }
 ```
 
-Then style `.activeArea` in your CSS with an absolute position, for example:
-
-```css
-.activeArea {
-  position: absolute;
-  top: 50px;
-  left: 50px;
-  right: 50px;
-  height: 200px;
-}
-```
-
 ## Pre-commit hook
 
-To install the pre-commit hook (which launch tests): `ln -s ../../pre-commit.sh .git/hooks/pre-commit`
+To install the pre-commit hook (which launches tests): `ln -s ../../pre-commit.sh .git/hooks/pre-commit`
 
 ## Contributors
 
-Thanks to all contributors : https://github.com/Mappy/Leaflet-active-area/graphs/contributors
+Thanks to all contributors: https://github.com/Mappy/Leaflet-active-area/graphs/contributors
 
 ## License
 
