@@ -1,5 +1,4 @@
-Leaflet-active-area [![Build Status](https://travis-ci.org/Mappy/Leaflet-active-area.svg?branch=master)](https://travis-ci.org/Mappy/Leaflet-active-area)
-===============
+# Leaflet-active-area [![Build Status](https://travis-ci.org/Mappy/Leaflet-active-area.svg?branch=master)](https://travis-ci.org/Mappy/Leaflet-active-area)
 
 That [Leaflet](http://leafletjs.com) plugin allows you to use a DIV as the active area.
 All positionning methods (setView, fitBounds, setZoom) will be applyed on this DIV instead of the all map.
@@ -46,6 +45,52 @@ Pass true as 3rd argument to animate the pan (default = false)
 
 - `map.getBounds()` returns the geographic bounds of the **active area**.
 - `map.getMapBounds()` returns the geographic bounds of the **entire map container**, regardless of the active area (useful e.g. for filtering markers or objects on the entire visible map).
+
+## React Leaflet integration
+
+If you use [React Leaflet](https://react-leaflet.js.org/), you can enable the active area from a child component of `MapContainer` using the `useMap` hook:
+
+```jsx
+import React, { useEffect } from "react";
+import { MapContainer, TileLayer, useMap } from "react-leaflet";
+import "leaflet/dist/leaflet.css";
+import "leaflet-active-area";
+
+function ActiveAreaSetup() {
+  const map = useMap();
+
+  useEffect(() => {
+    map.setActiveArea("activeArea", true, true);
+  }, [map]);
+
+  return null;
+}
+
+export default function MyMap() {
+  return (
+    <MapContainer
+      center={[48.853, 2.349]}
+      zoom={13}
+      style={{ height: "100vh", width: "100vw" }}
+    >
+      <ActiveAreaSetup />
+      <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+    </MapContainer>
+  );
+}
+```
+
+Then style `.activeArea` in your CSS with an absolute position, for example:
+
+```css
+.activeArea {
+  position: absolute;
+  top: 50px;
+  left: 50px;
+  right: 50px;
+  height: 200px;
+}
+```
 
 ## Pre-commit hook
 
