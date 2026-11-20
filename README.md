@@ -1,4 +1,4 @@
-# Leaflet-active-area [![Build Status](https://travis-ci.org/Mappy/Leaflet-active-area.svg?branch=master)](https://travis-ci.org/Mappy/Leaflet-active-area)
+# Leaflet-active-area
 
 That [Leaflet](http://leafletjs.com) plugin allows you to use a DIV as the active area.
 All positionning methods (setView, fitBounds, setZoom) will be applyed on this DIV instead of the all map.
