@@ -134,4 +134,39 @@ describe('LeafletActiveArea', () => {
       );
     });
   });
+
+  describe('#getMapBounds', () => {
+    beforeAll(() => {
+      mapDiv.style.width = '1000px';
+      mapDiv.style.height = '1000px';
+      map.setActiveArea({
+        position: 'absolute',
+        top: '50px',
+        left: '50px',
+        width: '400px',
+        height: '200px'
+      });
+      map.setView(Paris, 13);
+    });
+
+    it('should return full map container bounds even with an active area', () => {
+      const activeBounds = map.getBounds();
+      const mapBounds = map.getMapBounds();
+
+      // mapBounds must be strictly larger than activeBounds
+      expect(mapBounds.contains(activeBounds)).toBe(true);
+      expect(mapBounds.equals(activeBounds)).toBe(false);
+
+      // Matches the geographic extent of the 1000x1000 container with the active area offset
+      expect(mapBounds.toBBoxString()).toBe(
+        '2.26369857788086,48.796913540275355,2.435359954833985,48.909864610926675'
+      );
+    });
+
+    it('should match getBounds when no active area is set', () => {
+      map._viewport = null;
+
+      expect(map.getMapBounds().toBBoxString()).toBe(map.getBounds().toBBoxString());
+    });
+  });
 });

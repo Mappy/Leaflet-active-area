@@ -42,6 +42,11 @@ If your need to re-center the map automatically, pass 'true' as second argument 
 
 Pass true as 3rd argument to animate the pan (default = false)
 
+### Bounds
+
+- `map.getBounds()` returns the geographic bounds of the **active area**.
+- `map.getMapBounds()` returns the geographic bounds of the **entire map container**, regardless of the active area (useful e.g. for filtering markers or objects on the entire visible map).
+
 ## Pre-commit hook
 
 To install the pre-commit hook (which launch tests): `ln -s ../../pre-commit.sh .git/hooks/pre-commit`

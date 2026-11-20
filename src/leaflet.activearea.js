@@ -7,6 +7,7 @@ if (typeof previousMethods === 'undefined') {
         flyTo: L.Map.prototype.flyTo,
         setZoomAround: L.Map.prototype.setZoomAround,
         getBoundsZoom: L.Map.prototype.getBoundsZoom,
+        getBounds: L.Map.prototype.getBounds,
         PopupAdjustPan: L.Popup.prototype._adjustPan,
         RendererUpdate: L.Renderer.prototype._update
     };
@@ -19,12 +20,20 @@ L.Map.include({
         if (this._viewport) {
             return this.getViewportLatLngBounds()
         } else {
-            var bounds = this.getPixelBounds(),
+            return this.getMapBounds();
+        }
+    },
+
+    // Extends L.Map
+    getMapBounds: function() {
+        if (previousMethods.getBounds) {
+            return previousMethods.getBounds.call(this);
+        }
+        var bounds = this.getPixelBounds(),
             sw = this.unproject(bounds.getBottomLeft()),
             ne = this.unproject(bounds.getTopRight());
 
-            return new L.LatLngBounds(sw, ne);
-        }
+        return new L.LatLngBounds(sw, ne);
     },
 
     // Extends L.Map
